@@ -1,4 +1,4 @@
-service: qldb-bicycle-licence
+service: qldb-bicycle-licence-demo
 
 frameworkVersion: '2'
 

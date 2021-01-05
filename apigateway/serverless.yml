@@ -1,4 +1,4 @@
-service: qldb-apigateway
+service: qldb-apigateway-demo
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name

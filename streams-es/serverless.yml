@@ -1,4 +1,4 @@
-service: streams-es
+service: streams-es-demo
 
 frameworkVersion: '2'
 

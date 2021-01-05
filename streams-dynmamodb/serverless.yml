@@ -1,4 +1,4 @@
-service: streams-dynmamodb
+service: streams-dynmamodb-demo
 
 frameworkVersion: '2'
 
