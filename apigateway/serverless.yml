@@ -1,0 +1,76 @@
+service: qldb-apigateway
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
+  region: eu-west-1
+  stackName: ${self:service}
+
+resources:
+  Resources:
+    QldbApiGW:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: QldbBicycleLicenceApiGW
+
+    UserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UsernameConfiguration:
+          CaseSensitive: false
+        AutoVerifiedAttributes:
+          - email
+        UserPoolName: !Sub ${AWS::StackName}-user-pool
+        Schema:
+          - Name: email
+            AttributeDataType: String
+            Mutable: false
+            Required: true
+
+    UserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: !Sub ${AWS::StackName}-client
+        # GenerateSecret: false
+        UserPoolId: !Ref UserPool
+
+    ApiGatewayAuthorizer:
+      DependsOn:
+        - UserPool
+        - QldbApiGW
+      Type: AWS::ApiGateway::Authorizer
+      Properties:
+        Name: !Sub ${AWS::StackName}-authorizer
+        IdentitySource: method.request.header.Authorization
+        RestApiId: !Ref QldbApiGW
+        Type: COGNITO_USER_POOLS
+        ProviderARNs: 
+          - !GetAtt UserPool.Arn
+
+  Outputs:
+    apiGatewayRestApiId:
+      Value:
+        Ref: QldbApiGW
+      Export:
+        Name: QldbApiGateway-restApiId
+
+    apiGatewayAuthorizerId:
+      Value: !Ref ApiGatewayAuthorizer
+      Export:
+        Name: QldbApiGateway-ApiGatewayAuthorizerId
+
+    apiGatewayRestApiRootResourceId:
+      Value:
+        Fn::GetAtt:
+          - QldbApiGW
+          - RootResourceId
+      Export:
+        Name: QldbApiGateway-rootResourceId

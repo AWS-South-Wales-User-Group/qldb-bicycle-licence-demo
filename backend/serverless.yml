@@ -1,0 +1,167 @@
+service: qldb-bicycle-licence
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  memorySize: 512
+  stage: ${opt:stage, 'dev'}
+  region: eu-west-1
+  logRetentionInDays: 7 # Set the default RetentionInDays for a CloudWatch LogGroup
+  tracing:
+    apiGateway: true
+    lambda: true # Optional, can be true (true equals 'Active'), 'Active' or 'PassThrough'
+  apiGateway:
+    restApiId: !ImportValue QldbApiGateway-restApiId
+    restApiRootResourceId: !ImportValue QldbApiGateway-rootResourceId
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED	: "1"
+    LEDGER_NAME: 
+      Ref: qldbLedger
+  iamRoleStatements:
+    - Effect: Allow
+      Action: 
+        - qldb:SendCommand
+      Resource: arn:aws:qldb:#{AWS::Region}:#{AWS::AccountId}:ledger/qldb-bicycle-licence-${self:provider.stage}
+    - Effect: "Allow"
+      Action:
+        - "xray:PutTraceSegments"
+        - "xray:PutTelemetryRecords"
+      Resource: "*" # Restrict resource to minimum required
+
+plugins:
+  - serverless-iam-roles-per-function
+  - serverless-pseudo-parameters
+  - serverless-webpack
+
+custom:
+  webpack:
+    webpackConfig: 'webpack.config.js'   # Name of webpack configuration file
+    includeModules: false   # Node modules configuration for packaging
+    packager: 'npm'   # Packager that will be used to package your external modules
+
+functions:
+
+  createLicence:
+    name: create-bicycle-licence-${self:provider.stage}
+    handler: functions/create-licence.handler
+    events:
+      - http:
+          path: /licences
+          method: post
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGateway-ApiGatewayAuthorizerId
+  updateLicence:
+    name: update-bicycle-licence-${self:provider.stage}
+    handler: functions/update-licence.handler
+    events:
+      - http:
+          path: /licences
+          method: put
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGateway-ApiGatewayAuthorizerId
+
+  updateContact:
+    name: update-bicycle-contact-${self:provider.stage}
+    handler: functions/update-contact.handler
+    events:
+      - http:
+          path: /licences/contact
+          method: put
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGateway-ApiGatewayAuthorizerId
+
+  getLicence:
+    name: get-bicycle-licence-${self:provider.stage}
+    handler: functions/get-licence.handler
+    events:
+      - http:
+          path: /licences/{licenceid}
+          method: get
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGateway-ApiGatewayAuthorizerId
+
+  getLicenceHistory:
+    name: get-bicycle-licence-history-${self:provider.stage}
+    handler: functions/get-licence-history.handler
+    events:
+      - http:
+          path: /licences/history/{licenceid}
+          method: get
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGateway-ApiGatewayAuthorizerId
+
+  deleteLicence:
+    name: delete-bicycle-licence-${self:provider.stage}
+    handler: functions/delete-licence.handler
+    events:
+      - http:
+          path: /licences
+          method: delete
+          cors: true # <-- CORS!
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGateway-ApiGatewayAuthorizerId
+            
+  createQldbTable:
+    name: qldb-licence-table-${self:provider.stage}
+    handler: functions/createQldbTable.handler
+    memorySize: 256
+    timeout: 6
+    environment:
+      LICENCE_TABLE_NAME: BicycleLicence
+
+  createQldbIndex:
+    name: qldb-licence-index-${self:provider.stage}
+    handler: functions/createQldbIndex.handler
+    memorySize: 256
+    timeout: 6
+    environment:
+      TABLE_NAME: BicycleLicence
+      INDEX_NAME_1: GUID
+      INDEX_NAME_2: Email
+      INDEX_NAME_3: Telephone
+
+
+resources:
+  Resources:
+    qldbLedger:
+      Type: AWS::QLDB::Ledger
+      Properties:
+        Name: qldb-bicycle-licence-${self:provider.stage}
+        DeletionProtection: false
+        PermissionsMode: ALLOW_ALL
+        Tags:
+          - 
+            Key: name
+            Value: qldb-bicycle-licence
+
+    qldbTable:
+      Type: Custom::qldbTable
+      DependsOn: qldbLedger
+      Properties:
+        ServiceToken: !GetAtt CreateQldbTableLambdaFunction.Arn
+        Version: 1.0  #change this to force redeploy
+
+    qldbIndex:
+      Type: Custom::qldbIndexes
+      DependsOn: qldbTable
+      Properties:
+        ServiceToken: !GetAtt CreateQldbIndexLambdaFunction.Arn
+        Version: 1.0  #change this to force redeploy 
+  
+  Outputs:
+    qldbBicycleLicenceLedger:
+      Value:
+        Ref: qldbLedger
+      Export:
+        Name: qldb-bicycle-licence
