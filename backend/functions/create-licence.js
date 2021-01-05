@@ -12,13 +12,15 @@ const handler = async (event) => {
   const {
     firstName, lastName, email, street, county, postcode,
   } = JSON.parse(event.body);
+  const sub = event.requestContext.authorizer.claims.sub;
   Log.debug(`In the create licence handler with: first name ${firstName} last name ${lastName} email ${email} street ${street} and county ${county} and postcode ${postcode}`);
+
 
   try {
     const eventInfo = { eventName: 'BicycleLicenceCreated', eventDate: dateFormat(new Date(), 'isoDateTime') };
     console.log('About to call out to create licence');
     const response = await createLicence(
-      firstName, lastName, email, street, county, postcode, eventInfo
+      firstName, lastName, email, street, county, postcode, sub, eventInfo
     );
     return {
       statusCode: 201,

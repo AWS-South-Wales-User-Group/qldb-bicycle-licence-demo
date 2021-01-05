@@ -67,7 +67,7 @@ async function addGuid(txn, docId, email) {
  * @param event The LicenceHolderCreated event record to add to the document.
  * @returns The JSON record of the new licence reecord.
  */
-const createLicence = async (firstName, lastName, email, street, county, postcode, event) => {
+const createLicence = async (firstName, lastName, email, street, county, postcode, sub, event) => {
   Log.debug(`In createLicence function with: first name ${firstName} last name ${lastName} email ${email} street ${street} county ${county} and postcode ${postcode}`);
 
   let licence;
@@ -78,7 +78,7 @@ const createLicence = async (firstName, lastName, email, street, county, postcod
     const recordsReturned = await checkEmailUnique(txn, email);
     if (recordsReturned === 0) {
       const licenceDoc = {
-        firstName, lastName, email, street, county, postcode, penaltyPoints: 0, events: event,
+        firstName, lastName, email, street, county, postcode, penaltyPoints: 0, sub, events: event,
       };
       // Create the record. This returns the unique document ID in an array as the result set
       const result = await createBicycleLicence(txn, licenceDoc);
@@ -96,6 +96,7 @@ const createLicence = async (firstName, lastName, email, street, county, postcod
         street,
         county,
         postcode,
+        sub
       };
     } else {
       throw new LicenceIntegrityError(400, 'Licence Integrity Error', `Licence record with email ${email} already exists. No new record created`);
