@@ -137,7 +137,7 @@ resources:
     qldbLedger:
       Type: AWS::QLDB::Ledger
       Properties:
-        Name: qldb-bicycle-licence-${self:provider.stage}
+        Name: qldb-bicycle-licence-demo-${self:provider.stage}
         DeletionProtection: false
         PermissionsMode: ALLOW_ALL
         Tags:
