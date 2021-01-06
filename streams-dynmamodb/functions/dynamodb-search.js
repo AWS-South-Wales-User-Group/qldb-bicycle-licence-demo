@@ -9,11 +9,12 @@ const { getLicence } = require('./lib/dyanamodb-licence');
 
 const handler = async (event) => {
   const { licenceid } = event.pathParameters;
-  Log.debug(`In the dynamodb-search handler with licenceid ${licenceid}`);
+  const userId = event.requestContext.authorizer.claims.sub;
+  Log.debug(`In the dynamodb-search handler with licenceid ${licenceid} and userId ${userId}`);
 
   try {
 
-    response = await getLicence(licenceid);
+    response = await getLicence(licenceid, userId);
 
     Log.debug(`RESPONSE: ${JSON.stringify(response)}`);
 

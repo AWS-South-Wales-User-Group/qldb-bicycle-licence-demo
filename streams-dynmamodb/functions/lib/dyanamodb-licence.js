@@ -33,12 +33,12 @@ const deleteLicence = async (id, version) => {
   }
 };
 
-const getLicence = async (id) => {
-  Log.debug(`In getLicence function with id ${id}`);
+const getLicence = async (id, userId) => {
+  Log.debug(`In getLicence function with id ${id} and userId ${userId}`);
 
   const params = {
     TableName: TABLE_NAME,
-    Key: { pk: id }
+    Key: { pk: id, sk: userId }
   };
   const data = await dynamodb.get(params).promise();
   const item = data.Item;
@@ -64,7 +64,7 @@ const updateLicence = async (id, points, postcode, version, userId) => {
   Log.debug(`In updateLicence function with id ${id} points ${points} postcode ${postcode} and version ${version}`);
   const params = {
     TableName: TABLE_NAME,
-    Key: { pk: id },
+    Key: { pk: id, sk: userId },
     UpdateExpression: 'set penaltyPoints=:points, postcode=:code, version=:version, userId=:userId',
     ExpressionAttributeValues: {
       ':points': points,

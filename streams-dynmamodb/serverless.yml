@@ -74,6 +74,10 @@ functions:
       - http:
           path: /dynamodb/{licenceid}
           method: get
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
     iamRoleStatementsName: dynamodb-get-licence-demo-${self:provider.stage}
     iamRoleStatements: # Grant privilege read from Kinesis work stream 
     - Effect: Allow
@@ -107,12 +111,16 @@ resources:
       DeletionPolicy: Delete
       Properties:
         TableName: qldb-bicycle-licence-demo-${self:provider.stage}
-        AttributeDefinitions:
+        AttributeDefinitions: 
           - AttributeName: "pk"
-            AttributeType: S
+            AttributeType: "S"
+          - AttributeName: "sk"
+            AttributeType: "S"
         KeySchema:
           - AttributeName: "pk"
             KeyType: HASH
+          - AttributeName: "sk"
+            KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
 
 
