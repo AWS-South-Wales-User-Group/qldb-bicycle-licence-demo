@@ -85,6 +85,7 @@ functions:
       - http:
           path: /licences/{licenceid}
           method: get
+          cors: true
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
@@ -96,6 +97,7 @@ functions:
       - http:
           path: /licences/history/{licenceid}
           method: get
+          cors: true
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
@@ -107,7 +109,7 @@ functions:
       - http:
           path: /licences
           method: delete
-          cors: true # <-- CORS!
+          cors: true
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
@@ -129,7 +131,7 @@ functions:
       TABLE_NAME: BicycleLicence
       INDEX_NAME_1: licenceId
       INDEX_NAME_2: email
-      INDEX_NAME_3: sub
+      INDEX_NAME_3: userId
 
 
 resources:

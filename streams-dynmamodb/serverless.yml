@@ -12,8 +12,8 @@ provider:
     apiGateway: true
     lambda: true # Optional, can be true (true equals 'Active'), 'Active' or 'PassThrough'
   apiGateway:
-    restApiId: !ImportValue QldbApiGateway-restApiId
-    restApiRootResourceId: !ImportValue QldbApiGateway-rootResourceId
+    restApiId: !ImportValue QldbApiGatewayDemo-restApiId
+    restApiRootResourceId: !ImportValue QldbApiGatewayDemo-rootResourceId
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED	: "1"
     TABLE_NAME: 
@@ -68,13 +68,13 @@ functions:
         Fn::GetAtt: [StreamsFailureQueue, Arn]
 
   DynamoDBGetLicence:
-    name: dynamodb-get-licence-${self:provider.stage}
+    name: dynamodb-get-licence-demo-${self:provider.stage}
     handler: functions/dynamodb-search.handler
     events:
       - http:
           path: /dynamodb/{licenceid}
           method: get
-    iamRoleStatementsName: dynamodb-get-licence-${self:provider.stage}
+    iamRoleStatementsName: dynamodb-get-licence-demo-${self:provider.stage}
     iamRoleStatements: # Grant privilege read from Kinesis work stream 
     - Effect: Allow
       Action:
@@ -93,7 +93,7 @@ resources:
     licenceQldbStreamsDynamodb: 
       Type: AWS::Kinesis::Stream
       Properties: 
-        Name: QLDBBicycleLicence-dynamodb-${self:provider.stage}
+        Name: QLDBBicycleLicence-dynamodb-demo-${self:provider.stage}
         ShardCount: 1
     
     QldbStreamsDynamoDBLambdaFunction:
@@ -106,7 +106,7 @@ resources:
       Type: AWS::DynamoDB::Table
       DeletionPolicy: Delete
       Properties:
-        TableName: qldb-bicycle-licence-${self:provider.stage}
+        TableName: qldb-bicycle-licence-demo-${self:provider.stage}
         AttributeDefinitions:
           - AttributeName: "pk"
             AttributeType: S
@@ -144,7 +144,7 @@ resources:
                     - 'kinesis:ListShards'
                   Resource:
                     Fn::GetAtt: [licenceQldbStreamsDynamodb, Arn]
-        RoleName: qldb-bicycle-dynamodb-role-${self:provider.stage}
+        RoleName: qldb-bicycle-dynamodb-demo-role-${self:provider.stage}
 
     myQLDBStream:
       Type: "AWS::QLDB::Stream"
@@ -155,13 +155,13 @@ resources:
           AggregationEnabled: true
           StreamArn: 
             Fn::GetAtt: [licenceQldbStreamsDynamodb, Arn]
-        LedgerName: !ImportValue qldb-bicycle-licence
+        LedgerName: !ImportValue qldb-bicycle-licence-demo
         RoleArn: 
           Fn::GetAtt: [qldbStreamRole, Arn]
-        StreamName: qldb-bicycle-dynamodb-stream-${self:provider.stage}
+        StreamName: qldb-dynamodb-stream-demo-${self:provider.stage}
         Tags:
           - Key: name
-            Value: qldb-bicycle-licence
+            Value: qldb-bicycle-licence-demo
     
     MyEventSourceMapping:
       Type: AWS::Lambda::EventSourceMapping

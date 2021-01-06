@@ -60,16 +60,17 @@ const getLicence = async (id) => {
   }
 };
 
-const updateLicence = async (id, points, postcode, version) => {
+const updateLicence = async (id, points, postcode, version, userId) => {
   Log.debug(`In updateLicence function with id ${id} points ${points} postcode ${postcode} and version ${version}`);
   const params = {
     TableName: TABLE_NAME,
     Key: { pk: id },
-    UpdateExpression: 'set penaltyPoints=:points, postcode=:code, version=:version',
+    UpdateExpression: 'set penaltyPoints=:points, postcode=:code, version=:version, userId=:userId',
     ExpressionAttributeValues: {
       ':points': points,
       ':code': postcode,
       ':version': version,
+      ':userId': userId
     },
     ConditionExpression: 'attribute_not_exists(pk) OR version <= :version',
   };

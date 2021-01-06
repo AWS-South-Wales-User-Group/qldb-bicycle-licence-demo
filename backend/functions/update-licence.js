@@ -11,6 +11,7 @@ const LicenceIntegrityError = require('./lib/LicenceIntegrityError');
 
 const handler = async (event) => {
   const { licenceId, points } = JSON.parse(event.body);
+  const userId = event.requestContext.authorizer.claims.sub;
   Log.debug(`In the update licence handler with licenceId ${licenceId} and points ${points}`);
   let eventInfo;
   try {
@@ -19,7 +20,7 @@ const handler = async (event) => {
     } else {
       eventInfo = { eventName: 'PenaltyPointsRemoved', points: points, eventDate: dateFormat(new Date(), 'isoDateTime') };
     }
-    const response = await updateLicence(licenceId, points, eventInfo);
+    const response = await updateLicence(licenceId, points, userId, eventInfo);
     return {
       statusCode: 200,
       body: JSON.stringify(response),

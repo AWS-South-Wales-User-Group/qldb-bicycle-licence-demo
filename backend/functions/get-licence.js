@@ -9,10 +9,11 @@ const cors = require('@middy/http-cors')
 
 const handler = async (event) => {
   const { licenceid } = event.pathParameters;
-  Log.debug(`In the get-licence handler with licenceid ${licenceid}`);
+  const userId = event.requestContext.authorizer.claims.sub;
+  Log.debug(`In the get-licence handler with licenceid ${licenceid} and userId ${userId}`);
 
   try {
-    const response = await getLicence(licenceid);
+    const response = await getLicence(licenceid, userId);
     const licence = JSON.parse(response);
 
     return {

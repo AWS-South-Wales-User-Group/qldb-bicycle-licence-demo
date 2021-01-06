@@ -19,7 +19,7 @@ resources:
     QldbApiGW:
       Type: AWS::ApiGateway::RestApi
       Properties:
-        Name: QldbBicycleLicenceApiGW
+        Name: QldbBicycleLicenceDemoApiGW
 
     UserPool:
       Type: AWS::Cognito::UserPool
@@ -60,12 +60,12 @@ resources:
       Value:
         Ref: QldbApiGW
       Export:
-        Name: QldbApiGateway-restApiId
+        Name: QldbApiGatewayDemo-restApiId
 
     apiGatewayAuthorizerId:
       Value: !Ref ApiGatewayAuthorizer
       Export:
-        Name: QldbApiGateway-ApiGatewayAuthorizerId
+        Name: QldbApiGatewayDemo-ApiGatewayAuthorizerId
 
     apiGatewayRestApiRootResourceId:
       Value:
@@ -73,4 +73,4 @@ resources:
           - QldbApiGW
           - RootResourceId
       Export:
-        Name: QldbApiGateway-rootResourceId
+        Name: QldbApiGatewayDemo-rootResourceId

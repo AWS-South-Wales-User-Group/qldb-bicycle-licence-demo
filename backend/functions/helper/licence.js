@@ -67,7 +67,7 @@ async function addGuid(txn, docId, email) {
  * @param event The LicenceHolderCreated event record to add to the document.
  * @returns The JSON record of the new licence reecord.
  */
-const createLicence = async (firstName, lastName, email, street, county, postcode, sub, event) => {
+const createLicence = async (firstName, lastName, email, street, county, postcode, userId, event) => {
   Log.debug(`In createLicence function with: first name ${firstName} last name ${lastName} email ${email} street ${street} county ${county} and postcode ${postcode}`);
 
   let licence;
@@ -78,7 +78,7 @@ const createLicence = async (firstName, lastName, email, street, county, postcod
     const recordsReturned = await checkEmailUnique(txn, email);
     if (recordsReturned === 0) {
       const licenceDoc = {
-        firstName, lastName, email, street, county, postcode, penaltyPoints: 0, sub, events: event,
+        firstName, lastName, email, street, county, postcode, penaltyPoints: 0, userId, events: event,
       };
       // Create the record. This returns the unique document ID in an array as the result set
       const result = await createBicycleLicence(txn, licenceDoc);
@@ -95,8 +95,7 @@ const createLicence = async (firstName, lastName, email, street, county, postcod
         email,
         street,
         county,
-        postcode,
-        sub
+        postcode
       };
     } else {
       throw new LicenceIntegrityError(400, 'Licence Integrity Error', `Licence record with email ${email} already exists. No new record created`);
@@ -123,10 +122,10 @@ async function getLicenceRecordByEmail(txn, email) {
  * @param id The document id of the document to retrieve
  * @returns The Result from executing the statement
  */
-async function getLicenceRecordById(txn, id) {
+async function getLicenceRecordById(txn, id, userId) {
   Log.debug('In getLicenceRecordById function');
-  const query = 'SELECT * FROM BicycleLicence AS b WHERE b.licenceId = ?';
-  return txn.execute(query, id);
+  const query = 'SELECT * FROM BicycleLicence AS b WHERE b.licenceId = ? AND b.userId = ?'
+  return txn.execute(query, id, userId);
 }
 
 /**
@@ -135,10 +134,10 @@ async function getLicenceRecordById(txn, id) {
  * @param id The document id of the document to retrieve
  * @returns The Result from executing the statement
  */
-async function getLicenceRecordHistoryById(txn, id) {
+async function getLicenceRecordHistoryById(txn, id, userId) {
   Log.debug('In getLicenceRecordHistoryById function');
-  const query = 'SELECT * FROM history(BicycleLicence) WHERE metadata.id = ?';
-  return txn.execute(query, id);
+  const query = 'SELECT * FROM history(BicycleLicence) WHERE metadata.id = ? AND data.userId = ?';
+  return txn.execute(query, id, userId);
 }
 
 
@@ -180,7 +179,7 @@ async function addPointsUpdatedEvent(txn, licenceId, points, eventInfo) {
  * @param event The event to add
  * @returns A JSON document to return to the client
  */
-const updateLicence = async (licenceId, points, eventInfo) => {
+const updateLicence = async (licenceId, points, userId, eventInfo) => {
   Log.debug(`In updateLicence function with licenceId ${licenceId}, points ${points} and eventInfo ${eventInfo}`);
 
   let licence;
@@ -189,7 +188,7 @@ const updateLicence = async (licenceId, points, eventInfo) => {
   await qldbDriver.executeLambda(async (txn) => {
     // Get the current record
 
-    const result = await getLicenceRecordById(txn, licenceId);
+    const result = await getLicenceRecordById(txn, licenceId, userId);
     const resultList = result.getResultList();
 
     if (resultList.length === 0) {
@@ -219,7 +218,7 @@ const updateLicence = async (licenceId, points, eventInfo) => {
  * @param eventInfo The event to add
  * @returns A JSON document to return to the client
  */
-const updateContact = async (licenceId, street, county, postcode, eventInfo) => {
+const updateContact = async (licenceId, street, county, postcode, userId, eventInfo) => {
   Log.debug(`In updateContact function with licenceId ${licenceId} street ${street} county ${county} and postcode ${postcode}`);
 
   let licence;
@@ -228,7 +227,7 @@ const updateContact = async (licenceId, street, county, postcode, eventInfo) => 
   await qldbDriver.executeLambda(async (txn) => {
     // Get the current record
 
-    const result = await getLicenceRecordById(txn, licenceId);
+    const result = await getLicenceRecordById(txn, licenceId, userId);
     const resultList = result.getResultList();
 
     if (resultList.length === 0) {
@@ -262,15 +261,15 @@ async function deleteLicenceRecordById(txn, id) {
  * @param id The document id of the document to retrieve
  * @returns The JSON document to return to the client
  */
-const getLicence = async (licenceId) => {
-  Log.debug(`In getLicence function with licenceId ${licenceId}`);
+const getLicence = async (licenceId, userId) => {
+  Log.debug(`In getLicence function with licenceId ${licenceId} and userId ${userId}`);
 
   let licence;
   // Get a QLDB Driver instance
   const qldbDriver = await getQldbDriver();
   await qldbDriver.executeLambda(async (txn) => {
     // Get the current record
-    const result = await getLicenceRecordById(txn, licenceId);
+    const result = await getLicenceRecordById(txn, licenceId, userId);
     const resultList = result.getResultList();
 
     if (resultList.length === 0) {
@@ -287,15 +286,15 @@ const getLicence = async (licenceId) => {
  * @param id The document id of the document to retrieve
  * @returns The JSON document to return to the client
  */
-const getLicenceHistory = async (licenceId) => {
-  Log.debug(`In getLicence function with licenceId ${licenceId}`);
+const getLicenceHistory = async (licenceId, userId) => {
+  Log.debug(`In getLicence function with licenceId ${licenceId} and userId ${userId}`);
 
   let licence;
   // Get a QLDB Driver instance
   const qldbDriver = await getQldbDriver();
   await qldbDriver.executeLambda(async (txn) => {
     // Get the current record
-    const result = await getLicenceRecordHistoryById(txn, licenceId);
+    const result = await getLicenceRecordHistoryById(txn, licenceId, userId);
     const licenceHistoryArray = result.getResultList();
     if (licenceHistoryArray.length === 0) {
       throw new LicenceNotFoundError(400, 'Licence Not Found Error', `Licence record with licenceId ${licenceId} does not exist`);
@@ -312,15 +311,15 @@ const getLicenceHistory = async (licenceId) => {
  * @param id The document id of the document to delete
  * @returns The JSON response to return to the client
  */
-const deleteLicence = async (id) => {
-  Log.debug(`In deleteLicence function with LicenceId ${id}`);
+const deleteLicence = async (id, userId) => {
+  Log.debug(`In deleteLicence function with LicenceId ${id} and userId ${userId}`);
 
   let licence;
   // Get a QLDB Driver instance
   const qldbDriver = await getQldbDriver();
   await qldbDriver.executeLambda(async (txn) => {
     // Get the current record
-    const result = await getLicenceRecordById(txn, id);
+    const result = await getLicenceRecordById(txn, id, userId);
     const resultList = result.getResultList();
 
     if (resultList.length === 0) {

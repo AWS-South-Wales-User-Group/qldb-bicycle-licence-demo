@@ -10,10 +10,11 @@ const cors = require('@middy/http-cors')
 
 const handler = async (event) => {
   const { licenceId } = JSON.parse(event.body);
-  Log.debug(`In the delete licence handler for licenceid ${licenceId}`);
+  const userId = event.requestContext.authorizer.claims.sub;
+  Log.debug(`In the delete licence handler for licenceid ${licenceId} and userId ${userId}`);
 
   try {
-    const response = await deleteLicence(licenceId);
+    const response = await deleteLicence(licenceId, userId);
     const message = JSON.parse(response);
     return {
       statusCode: 201,

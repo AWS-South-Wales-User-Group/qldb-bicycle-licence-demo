@@ -45,11 +45,12 @@ async function processIon(ionRecord) {
   } else {
     const points = ionRecord.payload.revision.data.penaltyPoints.numberValue();
     const postcode = ionRecord.payload.revision.data.postcode.stringValue();
+    const userId = ionRecord.payload.revision.data.userId.stringValue();
 
-    Log.debug(`id: ${id}, points: ${points}, postcode: ${postcode}`);
+    Log.debug(`id: ${id}, points: ${points}, postcode: ${postcode}, userId: ${userId}`);
 
     // do an upsert so it doesn't matter if it is the initial version or not
-    await updateLicence(id, points, postcode, version);
+    await updateLicence(id, points, postcode, version, userId);
   }
 }
 

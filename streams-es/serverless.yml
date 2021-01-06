@@ -12,8 +12,8 @@ provider:
   tracing:
     lambda: true # Optional, can be true (true equals 'Active'), 'Active' or 'PassThrough'
   apiGateway:
-    restApiId: !ImportValue QldbApiGateway-restApiId
-    restApiRootResourceId: !ImportValue QldbApiGateway-rootResourceId
+    restApiId: !ImportValue QldbApiGatewayDemo-restApiId
+    restApiRootResourceId: !ImportValue QldbApiGatewayDemo-rootResourceId
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED	: "1"
 
@@ -276,7 +276,7 @@ resources:
           AggregationEnabled: true
           StreamArn:
             Fn::GetAtt: [licenceQldbStreamsES, Arn]
-        LedgerName: !ImportValue qldb-bicycle-licence
+        LedgerName: !ImportValue qldb-bicycle-licence-demo
         RoleArn: 
           Fn::GetAtt: [QLDBStreamRole, Arn]
         StreamName: QLDBStream-elastic-${self:provider.stage}

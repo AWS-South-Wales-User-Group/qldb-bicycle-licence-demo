@@ -13,12 +13,13 @@ const handler = async (event) => {
   const {
     licenceId, street, county, postcode
   } = JSON.parse(event.body);
+  const userId = event.requestContext.authorizer.claims.sub;
   const eventInfo = { eventName: 'ContactAddressUpdated', eventDate: dateFormat(new Date(), 'isoDateTime') };
 
   Log.debug(`In the update contact handler with: licenceId ${licenceId} street ${street} county ${county} and postcode ${postcode}`);
 
   try {
-    const response = await updateContact(licenceId, street, county, postcode, eventInfo);
+    const response = await updateContact(licenceId, street, county, postcode, userId, eventInfo);
     return {
       statusCode: 201,
       body: JSON.stringify(response),
