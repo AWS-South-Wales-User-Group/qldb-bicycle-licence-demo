@@ -11,7 +11,7 @@ export default function Register() {
   const [street, setStreet] = useState(faker.address.streetName);
   const [county, setCounty] = useState(faker.address.county);
   const [postcode, setPostcode] = useState(faker.address.zipCode);
-  const [email, setEmail] = useState(faker.internet.email);
+  const [email, setEmail] = useState(firstName + '.' + lastName + '@email.com');
   const [message, setMessage] = useState({});
   const [isCreated, setIsCreated] = useState(false);
   const [licenceId, setLicenceId] = useState("");
