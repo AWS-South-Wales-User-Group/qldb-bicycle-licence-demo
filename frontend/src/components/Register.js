@@ -49,6 +49,7 @@ export default function Register() {
       .then((response) => {
         console.log(response);
         setIsCreated(true);
+        setMessage(response);
         setFirstName(response.firstName);
         setLastName(response.lastName);
         setStreet(response.street);
