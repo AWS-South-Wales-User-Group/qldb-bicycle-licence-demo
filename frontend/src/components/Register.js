@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import API from "@aws-amplify/api";
-import { Form, Button, Col, Row, Card } from "react-bootstrap";
+import { Form, Button, Col, Row, Card, InputGroup } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Code from "./prism/Code";
 import faker from "faker";
@@ -37,6 +37,33 @@ export default function Register() {
         console.log(error.response);
       });
   }
+
+
+  function handleSearchSubmit(evt) {
+    evt.preventDefault();
+
+    console.log('In handleSearchSubmit');
+
+    const apiName = "ApiGatewayRestApi";
+    const path = `/licences/${licenceId}`;
+    API.get(apiName, path)
+      .then((response) => {
+        console.log(response);
+        setIsCreated(true);
+        setFirstName(response.firstName);
+        setLastName(response.lastName);
+        setStreet(response.street);
+        setCounty(response.county);
+        setPostcode(response.postcode);
+        setEmail(response.email);
+        setLicenceId(response.licenceId);
+        setPenaltyPoints(response.penaltyPoints);
+    })
+      .catch((error) => {
+        console.log(error.response);
+    });
+  }
+
 
   function handleSubmit(evt) {
     evt.preventDefault();
@@ -99,6 +126,24 @@ export default function Register() {
     <>
       <Row className='mt-3'>
         <Col md={6}>
+          <Form className='mt-3' onSubmit={handleSearchSubmit}>
+          <InputGroup className='mb-2'>
+            <InputGroup.Prepend>
+              <InputGroup.Text>Licence ID</InputGroup.Text>
+            </InputGroup.Prepend>
+            <Form.Control
+              type='text'
+              value={licenceId}
+              onChange={(e) => setLicenceId(e.target.value)}
+              placeholder='Enter Licence ID'
+            />
+            <InputGroup.Append>
+              <Button variant='outline-secondary' type='submit'>
+                Search
+              </Button>
+            </InputGroup.Append>
+          </InputGroup>
+        </Form>
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId='firstname'>
               <Form.Label>First Name</Form.Label>
