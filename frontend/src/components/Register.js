@@ -43,7 +43,6 @@ export default function Register() {
     evt.preventDefault();
 
     console.log('In handleSearchSubmit');
-
     const apiName = "ApiGatewayRestApi";
     const path = `/licences/${licenceId}`;
     API.get(apiName, path)
