@@ -85,6 +85,10 @@ functions:
       - http:
           path: /search/{lastname}
           method: get
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
     vpc:
       securityGroupIds:
         - "Fn::GetAtt": ElasticSecurityGroup.GroupId
@@ -148,6 +152,7 @@ resources:
             - !Ref ElasticSecurityGroup
 
     ElasticStreamRole:
+      DependsOn: ElasticStreamManagedPolicy
       Type: 'AWS::IAM::Role'
       Properties:
         AssumeRolePolicyDocument:
@@ -162,6 +167,7 @@ resources:
         Path: /
         ManagedPolicyArns:
           - !Ref ElasticStreamManagedPolicy
+
 
     ElasticStreamManagedPolicy:
       Type: 'AWS::IAM::ManagedPolicy'
@@ -182,6 +188,7 @@ resources:
               Resource: "*"
 
     ElasticVPC:
+      DependsOn: ElasticStreamRole
       Type: AWS::EC2::VPC
       Properties:
         CidrBlock: "10.0.0.0/16"

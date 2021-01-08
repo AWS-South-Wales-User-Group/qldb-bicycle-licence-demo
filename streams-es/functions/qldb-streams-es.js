@@ -47,8 +47,9 @@ async function processIon(ionRecord) {
     const licenceId = ionRecord.payload.revision.data.licenceId.stringValue();
     const firstName = ionRecord.payload.revision.data.firstName.stringValue();
     const lastName = ionRecord.payload.revision.data.lastName.stringValue();
+    const userId = ionRecord.payload.revision.data.userId.stringValue();
 
-    Log.debug(`id: ${id}, points: ${points}, postcode: ${postcode}, licenceId: ${licenceId}, firstName: ${firstName}, lastName: ${lastName}}`);
+    Log.debug(`id: ${id}, points: ${points}, postcode: ${postcode}, licenceId: ${licenceId}, firstName: ${firstName}, lastName: ${lastName}}, userId: ${userId}`);
 
     const doc = {
       licenceId,
@@ -57,6 +58,7 @@ async function processIon(ionRecord) {
       version,
       firstName,
       lastName,
+      userId
     };
     response = await sendRequest({
       httpMethod: 'PUT',
