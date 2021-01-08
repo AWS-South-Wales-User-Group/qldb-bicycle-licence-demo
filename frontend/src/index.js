@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "./App";
+import AuthStateApp from "./AuthStateApp";
 import reportWebVitals from "./reportWebVitals";
 import API from "@aws-amplify/api";
 import Auth from "@aws-amplify/auth";
@@ -8,8 +8,8 @@ import Auth from "@aws-amplify/auth";
 Auth.configure({
   Auth: {
     region: "eu-west-1",
-    userPoolId: "eu-west-1_****",
-    userPoolWebClientId: "****"
+    userPoolId: "eu-west-1_TL1zlExKE",
+    userPoolWebClientId: "6s7aqship3e29bg4slrs7bp0ud"
   },
 });
 
@@ -18,7 +18,7 @@ API.configure({
     endpoints: [
       {
         endpoint:
-          "https://****",
+          "https://a8ffyaj6f6.execute-api.eu-west-1.amazonaws.com/prod",
         name: "ApiGatewayRestApi",
         region: "eu-west-1",
         custom_header: async () => { 
@@ -31,7 +31,7 @@ API.configure({
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <AuthStateApp />
   </React.StrictMode>,
   document.getElementById("root")
 );

@@ -8,7 +8,7 @@ import Nav from "react-bootstrap/Nav";
 import Container from "react-bootstrap/Container";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import { LinkContainer } from "react-router-bootstrap";
-import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
+import { AmplifySignOut } from '@aws-amplify/ui-react';
 
 function App() {
   return (
@@ -38,7 +38,7 @@ function App() {
           <Route path='/search' component={Search} />
           <Route path='/enquiry' component={Enquiry} />
           <Route path='/'>
-            <Redirect from="/" to="/register" exact /> 
+            <Redirect to="/register" exact /> 
           </Route>
         </Switch>
       </Container>
@@ -46,4 +46,4 @@ function App() {
   );
 }
 
-export default withAuthenticator(App);
+export default App;
