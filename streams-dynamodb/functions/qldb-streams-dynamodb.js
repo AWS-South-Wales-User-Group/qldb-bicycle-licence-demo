@@ -5,7 +5,7 @@
 const Log = require('@dazn/lambda-powertools-logger');
 const deagg = require('aws-kinesis-agg');
 const ion = require('ion-js');
-const { deleteLicence, updateLicence } = require('./lib/dyanamodb-licence');
+const { deleteLicence, updateLicence } = require('./lib/dynamodb-licence');
 
 const computeChecksums = true;
 const REVISION_DETAILS = "REVISION_DETAILS";
