@@ -1,21 +1,59 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import API from "@aws-amplify/api";
 import { Form, Button, Col, Row, Card, InputGroup } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Code from "./prism/Code";
 import faker from "faker";
 
-export default function Register() {
+export default function Register(props) {
   const [firstName, setFirstName] = useState(faker.name.firstName);
   const [lastName, setLastName] = useState(faker.name.lastName);
   const [street, setStreet] = useState(faker.address.streetName);
   const [county, setCounty] = useState(faker.address.county);
   const [postcode, setPostcode] = useState(faker.address.zipCode);
-  const [email, setEmail] = useState(firstName + '.' + lastName + '@email.com');
+  const [email, setEmail] = useState(firstName + "." + lastName + "@email.com");
   const [message, setMessage] = useState({});
   const [isCreated, setIsCreated] = useState(false);
   const [licenceId, setLicenceId] = useState("");
   const [penaltyPoints, setPenaltyPoints] = useState(0);
+
+  const routeProps = {
+    match: props.match,
+    history: props.history,
+    location: props.location,
+  };
+
+  const search = useCallback(() => {
+    const apiName = "ApiGatewayRestApi";
+    const path = `/licences/${licenceId}`;
+    API.get(apiName, path)
+      .then((response) => {
+        console.log(response);
+        setIsCreated(true);
+        setMessage(response);
+        setFirstName(response.firstName);
+        setLastName(response.lastName);
+        setStreet(response.street);
+        setCounty(response.county);
+        setPostcode(response.postcode);
+        setEmail(response.email);
+        setLicenceId(response.licenceId);
+        setPenaltyPoints(response.penaltyPoints);
+      })
+      .catch((error) => {
+        const { response } = error;
+        if (response) {
+          setMessage(response.data);
+        }
+      });
+  }, [licenceId]);
+
+  useEffect(() => {
+    if (routeProps.location.state) {
+      setLicenceId(routeProps.location.state.licenceId);
+      search();
+    }
+  }, [routeProps.location, search]);
 
   function handlePointsSubmit(evt) {
     evt.preventDefault();
@@ -38,32 +76,10 @@ export default function Register() {
       });
   }
 
-
   function handleSearchSubmit(evt) {
     evt.preventDefault();
-
-    console.log('In handleSearchSubmit');
-    const apiName = "ApiGatewayRestApi";
-    const path = `/licences/${licenceId}`;
-    API.get(apiName, path)
-      .then((response) => {
-        console.log(response);
-        setIsCreated(true);
-        setMessage(response);
-        setFirstName(response.firstName);
-        setLastName(response.lastName);
-        setStreet(response.street);
-        setCounty(response.county);
-        setPostcode(response.postcode);
-        setEmail(response.email);
-        setLicenceId(response.licenceId);
-        setPenaltyPoints(response.penaltyPoints);
-    })
-      .catch((error) => {
-        console.log(error.response);
-    });
+    search();
   }
-
 
   function handleSubmit(evt) {
     evt.preventDefault();
@@ -134,9 +150,13 @@ export default function Register() {
     API.del(apiName, path, payload)
       .then((response) => {
         console.log(response);
+        setMessage(response);
       })
       .catch((error) => {
-        console.log(error.response);
+        const { response } = error;
+        if (response) {
+          setMessage(response.data);
+        }
       });
   }
 
@@ -145,23 +165,23 @@ export default function Register() {
       <Row className='mt-3'>
         <Col md={6}>
           <Form className='mt-3' onSubmit={handleSearchSubmit}>
-          <InputGroup className='mb-2'>
-            <InputGroup.Prepend>
-              <InputGroup.Text>Licence ID</InputGroup.Text>
-            </InputGroup.Prepend>
-            <Form.Control
-              type='text'
-              value={licenceId}
-              onChange={(e) => setLicenceId(e.target.value)}
-              placeholder='Enter Licence ID'
-            />
-            <InputGroup.Append>
-              <Button variant='outline-secondary' type='submit'>
-                Search
-              </Button>
-            </InputGroup.Append>
-          </InputGroup>
-        </Form>
+            <InputGroup className='mb-2'>
+              <InputGroup.Prepend>
+                <InputGroup.Text>Licence ID</InputGroup.Text>
+              </InputGroup.Prepend>
+              <Form.Control
+                type='text'
+                value={licenceId}
+                onChange={(e) => setLicenceId(e.target.value)}
+                placeholder='Enter Licence ID'
+              />
+              <InputGroup.Append>
+                <Button variant='outline-secondary' type='submit'>
+                  Search
+                </Button>
+              </InputGroup.Append>
+            </InputGroup>
+          </Form>
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId='firstname'>
               <Form.Label>First Name</Form.Label>
@@ -220,15 +240,14 @@ export default function Register() {
                 placeholder='Enter email'
               />
             </Form.Group>
-            <Button variant='dark' type='submit'>
+            <Button className='mr-1' variant='dark' type='submit'>
               {!isCreated ? "create" : "update contact"}
             </Button>
-            <br/><br/>
-            {
-              !isCreated ? null : 
-                <Button variant='dark' onClick={deleteLicence}>delete licence
-                </Button>
-            }
+            {!isCreated ? null : (
+              <Button variant='outline-dark' onClick={deleteLicence}>
+                delete licence
+              </Button>
+            )}
           </Form>
         </Col>
         <Col md={6}>
