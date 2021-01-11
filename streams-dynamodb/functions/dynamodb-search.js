@@ -14,7 +14,7 @@ const handler = async (event) => {
 
   try {
 
-    response = await getLicence(licenceid, userId);
+    response = await getLicence(userId, licenceid);
 
     Log.debug(`RESPONSE: ${JSON.stringify(response)}`);
 
