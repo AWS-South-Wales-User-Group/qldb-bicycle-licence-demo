@@ -34,9 +34,11 @@ function App() {
             <Nav.Link>Enquiry</Nav.Link>
           </LinkContainer>
         </Nav>
+        <Nav>
+          <AmplifySignOut/>
+        </Nav>
       </Navbar>
       <Container>
-        <AmplifySignOut />
         <Switch>
           <Route path='/register' component={Register} />
           <Route path='/history' component={History} />
