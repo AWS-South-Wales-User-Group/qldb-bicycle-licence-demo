@@ -53,7 +53,8 @@ export default function Enquiry() {
                     <td className='align-middle'>{value.sk}</td>
                     <td className='align-middle'>{value.postcode}</td>
                     <td className='align-middle'>{value.penaltyPoints}</td>
-                    <td className='align-middle center'>
+                    <td className='align-middle'>
+
                       <Link
                         to={{
                           pathname: "/history",
@@ -63,12 +64,29 @@ export default function Enquiry() {
                         }}
                       >
                         <Button
-                          block
+                          className="mr-1"
                           size='sm'
                           variant='outline-secondary'
                           type='submit'
                         >
                           history
+                        </Button>
+                      </Link>
+                      <Link
+                        className="mr-3"
+                        to={{
+                          pathname: "/register",
+                          state: {
+                            licenceId: value.sk,
+                          },
+                        }}
+                      >
+                        <Button
+                          size='sm'
+                          variant='outline-secondary'
+                          type='submit'
+                        >
+                          amend
                         </Button>
                       </Link>
                     </td>
