@@ -2,29 +2,26 @@
  * Lambda function that implements the get licence functionality
  */
 const Log = require('@dazn/lambda-powertools-logger');
-const { getLicenceHistory } = require('./helper/licence');
-const LicenceNotFoundError = require('./lib/LicenceNotFoundError');
 const middy = require('@middy/core')
 const cors = require('@middy/http-cors')
+const { findAllLicences } = require('./lib/dynamodb-licence');
+
 
 const handler = async (event) => {
-  const { licenceid } = event.pathParameters;
-  Log.debug(`In the get-licence-history handler with licenceid ${licenceid}`);
+  const userId = event.requestContext.authorizer.claims.sub;
+  Log.debug(`In the dynamodb-findall handler with userId ${userId}`);
 
   try {
-    const response = await getLicenceHistory(licenceid);
-    const licence = JSON.parse(response);
 
-    Log.debug(`Returning: ${JSON.stringify(licence)}`);
+    response = await findAllLicences(userId);
+
+    Log.debug(`RESPONSE: ${JSON.stringify(response)}`);
 
     return {
       statusCode: 200,
-      body: JSON.stringify(licence),
+      body: JSON.stringify(response),
     };
   } catch (error) {
-    if (error instanceof LicenceNotFoundError) {
-      return error.getHttpResponse();
-    }
     Log.error(`Error returned: ${error}`);
     const errorBody = {
       status: 500,

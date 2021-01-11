@@ -91,6 +91,30 @@ functions:
         - "xray:PutTelemetryRecords"
       Resource: "*"
 
+  DynamoDBFindAllLicence:
+    name: dynamodb-find-licence-demo-${self:provider.stage}
+    handler: functions/dynamodb-findall.handler
+    events:
+      - http:
+          path: /dynamodb/licences
+          method: get
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
+    iamRoleStatementsName: dynamodb-find-licence-demo-${self:provider.stage}
+    iamRoleStatements: # Grant privilege read from Kinesis work stream 
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+      Resource: 
+        Fn::GetAtt: [bicycleLicenceLedgerTable, Arn]
+    - Effect: "Allow"
+      Action:
+        - "xray:PutTraceSegments"
+        - "xray:PutTelemetryRecords"
+      Resource: "*"
+
 resources:
   Resources:
 

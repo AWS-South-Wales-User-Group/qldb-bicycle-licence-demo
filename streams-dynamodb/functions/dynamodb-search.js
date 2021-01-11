@@ -4,7 +4,7 @@
 const Log = require('@dazn/lambda-powertools-logger');
 const middy = require('@middy/core')
 const cors = require('@middy/http-cors')
-const { getLicence } = require('./lib/dyanamodb-licence');
+const { getLicence } = require('./lib/dynamodb-licence');
 
 
 const handler = async (event) => {
@@ -14,7 +14,7 @@ const handler = async (event) => {
 
   try {
 
-    response = await getLicence(licenceid, userId);
+    response = await getLicence(userId, licenceid);
 
     Log.debug(`RESPONSE: ${JSON.stringify(response)}`);
 

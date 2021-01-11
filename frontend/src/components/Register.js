@@ -122,6 +122,24 @@ export default function Register() {
       });
   }
 
+  function deleteLicence(evt) {
+    evt.preventDefault();
+    const apiName = "ApiGatewayRestApi";
+    const path = "/licences";
+    const payload = {
+      body: {
+        licenceId,
+      },
+    };
+    API.del(apiName, path, payload)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error.response);
+      });
+  }
+
   return (
     <>
       <Row className='mt-3'>
@@ -205,6 +223,12 @@ export default function Register() {
             <Button variant='dark' type='submit'>
               {!isCreated ? "create" : "update contact"}
             </Button>
+            <br/><br/>
+            {
+              !isCreated ? null : 
+                <Button variant='dark' onClick={deleteLicence}>delete licence
+                </Button>
+            }
           </Form>
         </Col>
         <Col md={6}>

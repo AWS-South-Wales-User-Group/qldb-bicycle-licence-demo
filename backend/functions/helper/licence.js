@@ -134,10 +134,10 @@ async function getLicenceRecordById(txn, id, userId) {
  * @param id The document id of the document to retrieve
  * @returns The Result from executing the statement
  */
-async function getLicenceRecordHistoryById(txn, id, userId) {
+async function getLicenceRecordHistoryById(txn, id) {
   Log.debug('In getLicenceRecordHistoryById function');
-  const query = 'SELECT * FROM history(BicycleLicence) WHERE metadata.id = ? AND data.userId = ?';
-  return txn.execute(query, id, userId);
+  const query = 'SELECT * FROM history(BicycleLicence) WHERE metadata.id = ?';
+  return txn.execute(query, id);
 }
 
 
@@ -286,15 +286,15 @@ const getLicence = async (licenceId, userId) => {
  * @param id The document id of the document to retrieve
  * @returns The JSON document to return to the client
  */
-const getLicenceHistory = async (licenceId, userId) => {
-  Log.debug(`In getLicence function with licenceId ${licenceId} and userId ${userId}`);
+const getLicenceHistory = async (licenceId) => {
+  Log.debug(`In getLicence function with licenceId ${licenceId}`);
 
   let licence;
   // Get a QLDB Driver instance
   const qldbDriver = await getQldbDriver();
   await qldbDriver.executeLambda(async (txn) => {
     // Get the current record
-    const result = await getLicenceRecordHistoryById(txn, licenceId, userId);
+    const result = await getLicenceRecordHistoryById(txn, licenceId);
     const licenceHistoryArray = result.getResultList();
     if (licenceHistoryArray.length === 0) {
       throw new LicenceNotFoundError(400, 'Licence Not Found Error', `Licence record with licenceId ${licenceId} does not exist`);
