@@ -28,26 +28,6 @@ export default function Search() {
       });
   }
 
-  function deleteLicence(evt) {
-    evt.preventDefault();
-    console.log('I AM HERE: ' + licenceId);
-    const apiName = "ApiGatewayRestApi";
-    const path = "/licences";
-    const payload = {
-      body: {
-        licenceId,
-      },
-    };
-    API.del(apiName, path, payload)
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        console.log(error.response);
-      });
-  }
-
-
   function field(key, label, value) {
     return (
       <>
@@ -79,9 +59,6 @@ export default function Search() {
           <InputGroup.Append>
             <Button variant='outline-secondary' type='submit'>
               Find
-            </Button>
-            <Button variant='outline-secondary' onClick={deleteLicence}>
-              Delete
             </Button>
           </InputGroup.Append>
         </InputGroup>
