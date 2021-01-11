@@ -28,6 +28,7 @@ export default function History(props) {
     const path = `/licences/history/${licenceid}`;
     API.get(apiName, path)
       .then((response) => {
+        console.log(response);
         const sortedResponse = response.sort(function (a, b) {
           return (
             new Date(b.metadata.txTime) -
