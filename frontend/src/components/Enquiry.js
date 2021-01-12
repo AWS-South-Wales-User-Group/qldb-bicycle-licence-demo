@@ -1,68 +1,34 @@
-import React, { useState } from "react";
-import { Form, Card, Row, Col, InputGroup, Button } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Card, Table, Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 import API from "@aws-amplify/api";
 
-export default function Search() {
-  const [licenceId, setLicenceId] = useState("");
-  const [response, setResponse] = useState({});
+export default function Enquiry() {
+  const [response, setResponse] = useState([]);
   const [error, setError] = useState();
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const apiName = "ApiGatewayRestApi";
+      const path = `/dynamodb/licences`;
+      API.get(apiName, path)
+        .then((response) => {
+          console.log(response);
+          setResponse(response);
+          setError(null);
+        })
+        .catch((error) => {
+          setError(error.response);
+          setResponse([]);
+        });
+    };
 
-  function handleSubmit(evt) {
-    evt.preventDefault();
-    get(licenceId);
-  }
-
-  function get(licenceId) {
-    const apiName = "ApiGatewayRestApi";
-    const path = `/dynamodb/${licenceId}`;
-    API.get(apiName, path)
-      .then((response) => {
-        setResponse(response);
-        setError(null);
-      })
-      .catch((error) => {
-        setError(error.response);
-        setResponse({});
-      });
-  }
-
-  function field(key, label, value) {
-    return (
-      <>
-        <Form.Group as={Row} controlId={key}>
-          <Form.Label column sm='2'>
-            {label}:
-          </Form.Label>
-          <Col sm='10'>
-            <Form.Control type='text' readOnly defaultValue={value} />
-          </Col>
-        </Form.Group>
-      </>
-    );
-  }
+    fetchData();
+  }, []);
 
   return (
     <>
-      <Form className='mt-3' onSubmit={handleSubmit}>
-        <InputGroup className='mb-2'>
-          <InputGroup.Prepend>
-            <InputGroup.Text>Licence ID</InputGroup.Text>
-          </InputGroup.Prepend>
-          <Form.Control
-            type='text'
-            value={licenceId}
-            onChange={(e) => setLicenceId(e.target.value)}
-            placeholder='Enter Licence ID'
-          />
-          <InputGroup.Append>
-            <Button variant='outline-secondary' type='submit'>
-              Find
-            </Button>
-          </InputGroup.Append>
-        </InputGroup>
-      </Form>
       {error ? (
         <Card className='text-center mt-4'>
           <Card.Body className='mt-0'>
@@ -71,19 +37,64 @@ export default function Search() {
         </Card>
       ) : (
         <>
-          <Card border='light'>
-            <Card.Body className='mt-0'>
-              <Form mt-4>
-                {field("licenceId", "Licence ID", response.id)}
-                {field("postcode", "PostCode", response.postcode)}
-                {field(
-                  "penaltyPoints",
-                  "Penalty Points",
-                  response.penaltyPoints
-                )}
-              </Form>
-            </Card.Body>
-          </Card>
+          <Table striped bordered size='sm' className='mt-3'>
+            <thead>
+              <tr>
+                <th>Licence ID</th>
+                <th>Postcode</th>
+                <th>Penalty Points</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {response.map((value, index) => {
+                return (
+                  <tr key={index}>
+                    <td className='align-middle'>{value.sk}</td>
+                    <td className='align-middle'>{value.postcode}</td>
+                    <td className='align-middle'>{value.penaltyPoints}</td>
+                    <td className='align-middle'>
+
+                      <Link
+                        to={{
+                          pathname: "/history",
+                          state: {
+                            licenceId: value.sk,
+                          },
+                        }}
+                      >
+                        <Button
+                          className="mr-1"
+                          size='sm'
+                          variant='outline-secondary'
+                          type='submit'
+                        >
+                          history
+                        </Button>
+                      </Link>
+                      <Link
+                        className="mr-3"
+                        to={{
+                          pathname: "/register",
+                          state: {
+                            licenceId: value.sk,
+                          },
+                        }}
+                      >
+                        <Button
+                          size='sm'
+                          variant='outline-secondary'
+                          type='submit'
+                        >
+                          amend
+                        </Button>
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
         </>
       )}
     </>

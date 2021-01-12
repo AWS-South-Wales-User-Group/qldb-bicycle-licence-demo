@@ -6,16 +6,21 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import Container from "react-bootstrap/Container";
-import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from "react-router-dom";
 import { LinkContainer } from "react-router-bootstrap";
-import { AmplifySignOut } from '@aws-amplify/ui-react';
+import { AmplifySignOut } from "@aws-amplify/ui-react";
 
 function App() {
   return (
     <Router>
       <Navbar bg='dark' variant='dark'>
         <Navbar.Brand>QLDB Bicycle</Navbar.Brand>
-        <Nav className='mr-auto'>
+        <Nav className='mr-auto' activeKey='/'>
           <LinkContainer to='/register'>
             <Nav.Link>Register</Nav.Link>
           </LinkContainer>
@@ -29,16 +34,18 @@ function App() {
             <Nav.Link>Enquiry</Nav.Link>
           </LinkContainer>
         </Nav>
+        <Nav>
+          <AmplifySignOut/>
+        </Nav>
       </Navbar>
       <Container>
-      <AmplifySignOut />
         <Switch>
           <Route path='/register' component={Register} />
           <Route path='/history' component={History} />
           <Route path='/search' component={Search} />
           <Route path='/enquiry' component={Enquiry} />
           <Route path='/'>
-            <Redirect to="/register" exact /> 
+            <Redirect to='/register' exact />
           </Route>
         </Switch>
       </Container>
