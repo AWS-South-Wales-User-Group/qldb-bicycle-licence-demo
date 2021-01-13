@@ -11,12 +11,12 @@ AWSXRay.captureAWS(require('aws-sdk'));
 
 const { TABLE_NAME } = process.env;
 
-const deleteLicence = async (userId, id, version) => {
-  Log.debug(`In deleteLicence function with userId ${userId}, id ${id} and version ${version}`);
+const deleteLicence = async (id, version) => {
+  Log.debug(`In deleteLicence function with id ${id} and version ${version}`);
 
   const params = {
     TableName: TABLE_NAME,
-    Key: { pk: userId, sk: id },
+    Key: { pk: `LICENCE#${id}` },
     UpdateExpression: 'set version=:version, isDeleted=:isDeleted',
     ExpressionAttributeValues: {
       ':version': version,
@@ -38,7 +38,7 @@ const getLicence = async (userId, id) => {
 
   const params = {
     TableName: TABLE_NAME,
-    Key: { pk: userId, sk: id }
+    Key: { pk: `LICENCE#${id}` }
   };
   const data = await dynamodb.get(params).promise();
   const item = data.Item;
@@ -66,9 +66,10 @@ const findAllLicences = async (userId) => {
 
   const params = {
     TableName: TABLE_NAME,
-    KeyConditionExpression: 'pk = :userId',
+    IndexName: "GSI1",
+    KeyConditionExpression: 'sk = :userId',
     ExpressionAttributeValues: {
-      ':userId': userId
+      ':userId': `USERID#${userId}`
   },
   };
   const data = await dynamodb.query(params).promise();
@@ -86,13 +87,15 @@ const updateLicence = async (id, points, postcode, version, userId) => {
   Log.debug(`In updateLicence function with id ${id} points ${points} postcode ${postcode} and version ${version}`);
   const params = {
     TableName: TABLE_NAME,
-    Key: { pk: userId, sk: id },
-    UpdateExpression: 'set penaltyPoints=:points, postcode=:code, version=:version, userId=:userId',
+    Key: { pk: `LICENCE#${id}` },
+    UpdateExpression: 'set sk=:sk, penaltyPoints=:points, postcode=:code, version=:version, userId=:userId, licenceId=:licenceId',
     ExpressionAttributeValues: {
+      ':sk': `USERID#${userId}`,
       ':points': points,
       ':code': postcode,
       ':version': version,
-      ':userId': userId
+      ':userId': userId,
+      ':licenceId': id
     },
     ConditionExpression: 'attribute_not_exists(pk) OR version <= :version',
   };

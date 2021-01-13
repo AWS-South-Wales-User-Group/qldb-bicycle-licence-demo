@@ -43,6 +43,7 @@ export default function Enquiry() {
                 <th>Licence ID</th>
                 <th>Postcode</th>
                 <th>Penalty Points</th>
+                <th>Deleted</th>
                 <th></th>
               </tr>
             </thead>
@@ -50,16 +51,17 @@ export default function Enquiry() {
               {response.map((value, index) => {
                 return (
                   <tr key={index}>
-                    <td className='align-middle'>{value.sk}</td>
+                    <td className='align-middle'>{value.licenceId}</td>
                     <td className='align-middle'>{value.postcode}</td>
                     <td className='align-middle'>{value.penaltyPoints}</td>
+                    <td className='align-middle'>{value.isDeleted ? "Yes" : ""}</td>
                     <td className='align-middle'>
 
                       <Link
                         to={{
                           pathname: "/history",
                           state: {
-                            licenceId: value.sk,
+                            licenceId: value.licenceId,
                           },
                         }}
                       >
@@ -72,12 +74,13 @@ export default function Enquiry() {
                           history
                         </Button>
                       </Link>
+                      {!value.isDeleted ? (
                       <Link
                         className="mr-3"
                         to={{
                           pathname: "/register",
                           state: {
-                            licenceId: value.sk,
+                            licenceId: value.licenceId,
                           },
                         }}
                       >
@@ -89,6 +92,9 @@ export default function Enquiry() {
                           amend
                         </Button>
                       </Link>
+                      ) : (
+                        <></>
+                      )}
                     </td>
                   </tr>
                 );
