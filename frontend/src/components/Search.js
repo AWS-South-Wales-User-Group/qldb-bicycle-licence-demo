@@ -34,6 +34,16 @@ export default function Search() {
 
   return (
     <>
+      <Card className='mt-4 align-items-center d-flex justify-content-center'>
+        <Card.Body className='mt-0' bg-secondary>
+          <div class="p-3 mb-2 bg-warning text-black">
+            <h4 className='card-title text-center'>Search Service</h4>
+              This screen allows a user to search for a Bicycle Licence using a wildcard search on last name.
+              This data is hosted in Elasticsearch, which is populated in near real time by data streamed
+              from the QLDB ledger.
+          </div>
+        </Card.Body>
+      </Card>
       <Form className='mt-3'>
         <InputGroup className='mb-2'>
           <InputGroup.Prepend>

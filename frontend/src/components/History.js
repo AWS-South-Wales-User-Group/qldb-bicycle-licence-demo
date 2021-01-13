@@ -53,6 +53,17 @@ export default function History(props) {
 
   return (
     <>
+      <Card className='mt-4 align-items-center d-flex justify-content-center'>
+        <Card.Body className='mt-0' bg-secondary>
+          <div class="p-3 mb-2 bg-warning text-black">
+            <h4 className='card-title text-center'>History Service</h4>
+              This screen allows a user to view all changes (document revisions) that have taken place against 
+              a given Bicycle Licence entity. This uses the history function in QLDB, which is a PartiQL extension.
+              The top fields show the current state as held in the user view. This will be empty if the licence 
+              has been deleted. The `LicenceDeleted` event will appear in the sequential list of events.
+          </div>
+        </Card.Body>
+      </Card>
       <Form className='mt-3' onSubmit={handleSubmit}>
         <InputGroup className='mb-2'>
           <InputGroup.Prepend>

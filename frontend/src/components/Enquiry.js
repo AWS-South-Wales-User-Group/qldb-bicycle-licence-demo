@@ -37,6 +37,20 @@ export default function Enquiry() {
         </Card>
       ) : (
         <>
+        <Card className='mt-4 align-items-center d-flex justify-content-center'>
+        <Card.Body className='mt-0' bg-secondary>
+          <div class="p-3 mb-2 bg-warning text-black">
+            <h4 className='card-title text-center'>Enquiry Service</h4>
+              This screen displays all bicycle licences that have been registered by the currently authenticated
+              user. This prevents a user from seeing data created by someone else. 
+              The data is retrieved from DynamoDB which is populated in near real time by data streamed from 
+              the QLDB ledger. The data has also been filtered during the streaming process to remove PII 
+              data such as `First Name` and `Last Name`. This is an example of how QLDB can remain the 
+              source of truth, whilst other purpose-built databases can be populated with data to support
+              other use cases.
+          </div>
+        </Card.Body>
+      </Card>
           <Table striped bordered size='sm' className='mt-3'>
             <thead>
               <tr>
