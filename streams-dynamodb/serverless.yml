@@ -107,13 +107,22 @@ functions:
     - Effect: Allow
       Action:
         - dynamodb:Query
-      Resource: 
-        Fn::GetAtt: [bicycleLicenceLedgerTable, Arn]
+      Resource:
+        - Fn::GetAtt:
+          - bicycleLicenceLedgerTable
+          - Arn
+        - Fn::Join: 
+          - "/"
+          - - Fn::GetAtt:
+              - bicycleLicenceLedgerTable
+              - Arn
+            - "index/GSI1"
     - Effect: "Allow"
       Action:
         - "xray:PutTraceSegments"
         - "xray:PutTelemetryRecords"
       Resource: "*"
+
 
 resources:
   Resources:
@@ -143,10 +152,14 @@ resources:
         KeySchema:
           - AttributeName: "pk"
             KeyType: HASH
-          - AttributeName: "sk"
-            KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
-
+        GlobalSecondaryIndexes:
+          - IndexName: 'GSI1'
+            KeySchema:
+            - AttributeName: "sk"
+              KeyType: "HASH"
+            Projection:
+              ProjectionType: ALL
 
     StreamsFailureQueue:
       Type: AWS::SQS::Queue        
