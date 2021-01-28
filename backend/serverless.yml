@@ -34,12 +34,18 @@ plugins:
   - serverless-iam-roles-per-function
   - serverless-pseudo-parameters
   - serverless-webpack
+  - serverless-api-gateway-throttling
 
 custom:
   webpack:
     webpackConfig: 'webpack.config.js'   # Name of webpack configuration file
     includeModules: false   # Node modules configuration for packaging
     packager: 'npm'   # Packager that will be used to package your external modules
+  # Configures throttling settings for the API Gateway stage
+  # They apply to all http endpoints, unless specifically overridden
+  apiGatewayThrottling:
+    maxRequestsPerSecond: 1000
+    maxConcurrentRequests: 500
 
 functions:
 
@@ -54,6 +60,9 @@ functions:
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
+          throttling:
+            maxRequestsPerSecond: 100
+            maxConcurrentRequests: 50
   updateLicence:
     name: update-bicycle-licence-demo-${self:provider.stage}
     handler: functions/update-licence.handler
@@ -65,6 +74,9 @@ functions:
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
+          throttling:
+            maxRequestsPerSecond: 100
+            maxConcurrentRequests: 50
 
   updateContact:
     name: update-bicycle-contact-demo-${self:provider.stage}
@@ -77,6 +89,9 @@ functions:
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
+          throttling:
+            maxRequestsPerSecond: 100
+            maxConcurrentRequests: 50
 
   getLicence:
     name: get-bicycle-licence-demo-${self:provider.stage}
@@ -89,6 +104,9 @@ functions:
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
+          throttling:
+            maxRequestsPerSecond: 100
+            maxConcurrentRequests: 50
 
   getLicenceHistory:
     name: get-bicycle-licence-history-demo-${self:provider.stage}
@@ -101,6 +119,9 @@ functions:
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
+          throttling:
+            maxRequestsPerSecond: 100
+            maxConcurrentRequests: 50
 
   deleteLicence:
     name: delete-bicycle-licence-demo-${self:provider.stage}
@@ -113,6 +134,9 @@ functions:
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
+          throttling:
+            maxRequestsPerSecond: 100
+            maxConcurrentRequests: 50
             
   createQldbDemoTable:
     name: qldb-licence-table-demo-${self:provider.stage}

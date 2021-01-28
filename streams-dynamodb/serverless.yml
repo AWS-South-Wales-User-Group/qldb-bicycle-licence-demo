@@ -23,12 +23,18 @@ plugins:
   - serverless-iam-roles-per-function
   - serverless-pseudo-parameters
   - serverless-webpack
+  - serverless-api-gateway-throttling
 
 custom:
   webpack:
     webpackConfig: 'webpack.config.js'   # Name of webpack configuration file
     includeModules: false   # Node modules configuration for packaging
     packager: 'npm'   # Packager that will be used to package your external modules
+  # Configures throttling settings for the API Gateway stage
+  # They apply to all http endpoints, unless specifically overridden
+  apiGatewayThrottling:
+    maxRequestsPerSecond: 1000
+    maxConcurrentRequests: 500
 
 functions:
   qldbStreamsDynamoDB:
@@ -78,6 +84,9 @@ functions:
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
+          throttling:
+            maxRequestsPerSecond: 100
+            maxConcurrentRequests: 50
     iamRoleStatementsName: dynamodb-get-licence-demo-${self:provider.stage}
     iamRoleStatements: # Grant privilege read from Kinesis work stream 
     - Effect: Allow
@@ -102,6 +111,9 @@ functions:
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
+          throttling:
+            maxRequestsPerSecond: 100
+            maxConcurrentRequests: 50
     iamRoleStatementsName: dynamodb-find-licence-demo-${self:provider.stage}
     iamRoleStatements: # Grant privilege read from Kinesis work stream 
     - Effect: Allow
