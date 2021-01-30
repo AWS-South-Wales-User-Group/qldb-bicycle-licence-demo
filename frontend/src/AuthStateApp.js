@@ -23,12 +23,23 @@ const AuthStateApp = () => {
     return (
       <Container>
         <Jumbotron>
-          <h1>Hello, QLDB!</h1>
+          <h1>QLDB Bicycle Licence Demo</h1>
           <p>
-            Welcome to QLDB demo. This is a demo site to show some of the
-            features of the Amazon QLDB service. Create an account and create
-            some synthetic bicycle licence data, which you can query against
-            using QLDB, DynamoDB and elasticsearch
+            Welcome to the QLDB Bicycle Licence demo. This is a working prototype to demonstrate some of the
+            features of the Amazon QLDB service. To start off, you need to create an account using a valid
+            email address you have access too. Next you can create your own synthetic bicycle licence data, add and
+            remove penalty points and change contact details. You can also delete the record. At any point
+            you can view the history of a specific record, showing all revisions that have been made in 
+            chronological order.<br/><br/>
+
+            As you interact with the underlying QLDB ledger, all changes are streamed out to both DynamoDB 
+            and Elasticsearch. You can use the 'Enquiry' menu to automatically retrieve all bicycle licence records
+            that have been registered by the authenticated user. You can use the 'Search' menu to retrieve licence records
+            that match a wildcard search on last name.<br/><br/>
+            
+            The source code for this demo can be found <a href="https://github.com/AWS-South-Wales-User-Group/qldb-bicycle-licence-demo">
+              here
+            </a>
           </p>
           <p>
             <Button onClick={() => setAuthState("signin")} variant='primary'>
