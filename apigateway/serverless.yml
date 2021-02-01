@@ -50,6 +50,41 @@ resources:
         ProviderARNs: 
           - !GetAtt UserPool.Arn
 
+    MyWAFACL:
+      Type: AWS::WAFv2::WebACL
+      Properties:
+        DefaultAction:
+          Allow: {}
+        Description: Application WAF
+        Scope: REGIONAL
+        VisibilityConfig:
+          CloudWatchMetricsEnabled: true
+          MetricName: AppRules
+          SampledRequestsEnabled: true
+        Rules:
+          - Action:
+              Block: {}
+            Name: RateLimit
+            Priority: 0
+            Statement:
+              RateBasedStatement:
+                AggregateKeyType: "IP"
+                Limit: 100
+            VisibilityConfig:
+              CloudWatchMetricsEnabled: true
+              MetricName: RateLimiter
+              SampledRequestsEnabled: true
+              
+    MyWAFAssociation:
+      Type: AWS::WAFv2::WebACLAssociation
+      Properties: 
+        ResourceArn:
+          !Sub 
+            - arn:aws:apigateway:${AWS::Region}::/restapis/${ApiId}/stages/${ApiStage}
+            - ApiId: !Ref QldbApiGW
+              ApiStage: ${opt:stage, 'dev'}
+        WebACLArn: !GetAtt MyWAFACL.Arn
+
   Outputs:
     apiGatewayRestApiId:
       Value:
