@@ -134,20 +134,13 @@ resources:
         ElasticsearchClusterConfig:
           DedicatedMasterEnabled: false
           InstanceCount: "1"
-          InstanceType: r5.large.elasticsearch
+          InstanceType: t3.small.elasticsearch
           ZoneAwarenessEnabled: false
         EBSOptions:
           EBSEnabled: true
           Iops: 0
           VolumeSize: 10
-          VolumeType: standard
-        EncryptionAtRestOptions:
-          Enabled: true
-          KmsKeyId: arn:aws:kms:${self:provider.region}:#{AWS::AccountId}:alias/aws/es
-        NodeToNodeEncryptionOptions:
-          Enabled: true
-        DomainEndpointOptions:
-          EnforceHTTPS: true
+          VolumeType: gp2
         AccessPolicies:
           Version: "2012-10-17"
           Statement:
