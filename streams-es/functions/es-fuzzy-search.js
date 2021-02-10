@@ -9,16 +9,20 @@ const { sendRequest } = require('./helper/es-licence');
 
 const handler = async (event) => {
   const { lastname } = event.pathParameters;
-  Log.debug(`In the es-fuzzy-search handler with lastname ${lastname}`);
+  const userId = event.requestContext.authorizer.claims.sub;
+  Log.debug(`In the es-fuzzy-search handler with userId ${userId} and lastname ${lastname}`);
 
   try {
 
     const doc = {
-      "query": {
-        "wildcard": {
-          "lastName": {
-            "value": lastname + '*'
-          }
+      "query": { 
+        "bool": { 
+          "must": [
+            { "match": { "userId.keyword": userId  }}
+          ],
+          "filter": [ 
+            { "wildcard":  { "lastName": lastname + '*' }}
+          ]
         }
       }
     }
