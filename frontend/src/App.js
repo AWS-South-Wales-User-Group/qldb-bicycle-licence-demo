@@ -118,8 +118,6 @@ function App() {
     </>
   );
 }
-const MyTheme = {
-  signOutButton: { backgroundColor: "red", borderColor: "red" },
-};
 
-export default withAuthenticator(App, false, [], null, MyTheme);
+
+export default withAuthenticator(App);
