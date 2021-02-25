@@ -163,8 +163,8 @@ export default function Register(props) {
   return (
     <>
       <Card className='mt-4 align-items-center d-flex justify-content-center'>
-        <Card.Body className='mt-0' bg-secondary>
-          <div class="p-3 mb-2 bg-warning text-black">
+        <Card.Body className='mt-0'>
+          <div className="p-3 mb-2 bg-warning text-black">
             <h4 className='card-title text-center'>Register Service</h4>
             This screen executes operations against a fictional Bicycle Licence entity, including creating, amending and deleting.
             All these operations take place against a QLDB ledger, which acts as the immutable source of truth.            

@@ -54,8 +54,8 @@ export default function History(props) {
   return (
     <>
       <Card className='mt-4 align-items-center d-flex justify-content-center'>
-        <Card.Body className='mt-0' bg-secondary>
-          <div class="p-3 mb-2 bg-warning text-black">
+        <Card.Body className='mt-0'>
+          <div className="p-3 mb-2 bg-warning text-black">
             <h4 className='card-title text-center'>History Service</h4>
               This screen allows a user to view all changes (document revisions) that have taken place against 
               a given Bicycle Licence entity. This uses the history function in QLDB, which is a PartiQL extension.
