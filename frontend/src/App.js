@@ -16,7 +16,7 @@ import Container from "react-bootstrap/Container";
 import { Switch, Route, Redirect } from "react-router-dom";
 import { LinkContainer } from "react-router-bootstrap";
 
-function App(props) {
+function App() {
   const [user, setUser] = useState();
   const [email, setEmail] = useState();
   const [group, setGroup] = useState();
@@ -36,9 +36,9 @@ function App(props) {
       Auth.currentAuthenticatedUser({bypassCache:true}).then(
         (response) => {
           console.log(response);
-          // setGroup(
-          //   response.signInUserSession.accessToken.payload["cognito:groups"]
-          // );
+          setGroup(
+            response.signInUserSession.accessToken.payload["cognito:groups"]
+          );
         }
       );
   }
@@ -91,13 +91,13 @@ function App(props) {
               </>
             }
           >
-            <NavDropdown.ItemText>current role: {group}</NavDropdown.ItemText>
+            {/* <NavDropdown.ItemText>current role: {group}</NavDropdown.ItemText>
             <NavDropdown.Divider />
 
             <NavDropdown.Item eventKey='ad'>Admin</NavDropdown.Item>
             <NavDropdown.Item eventKey='au'>Audit</NavDropdown.Item>
-            <NavDropdown.Item eventKey='ro'>Readonly</NavDropdown.Item>
-            <NavDropdown.Divider />
+            <NavDropdown.Item eventKey='ro'>Readonly</NavDropdown.Item> */}
+            {/* <NavDropdown.Divider /> */}
             <div className='dropdown-item'>
               <AmplifySignOut />
             </div>

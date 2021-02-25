@@ -3,42 +3,34 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import API from "@aws-amplify/api";
-import { Logger, Amplify } from "@aws-amplify/core";
 import Auth from "@aws-amplify/auth";
 import { BrowserRouter as Router } from "react-router-dom";
-Logger.LOG_LEVEL = "DEBUG";
-
 
 
 Auth.configure({
   Auth: {
     region: "eu-west-1",
-    userPoolId: "eu-west-1_z8QXJ5zUq",
-    userPoolWebClientId: "um8rd3o0ltsvt1rofpo3cva9t",
-    identityPoolId: 'eu-west-1:2d1f2c19-463a-4ac0-a972-5aa1206ea280',
-    mandatorySignIn: true,
-
-
+    userPoolId: "eu-west-1_TL1zlExKE",
+    userPoolWebClientId: "6s7aqship3e29bg4slrs7bp0ud"
   },
 });
+
 API.configure({
   API: {
     endpoints: [
       {
-        endpoint: "https://gjo8rutz64.execute-api.eu-west-1.amazonaws.com/dev",
+        endpoint:
+          "https://a8ffyaj6f6.execute-api.eu-west-1.amazonaws.com/prod",
         name: "ApiGatewayRestApi",
         region: "eu-west-1",
-        // custom_header: async () => {
-        //   return {
-        //     Authorization: `Bearer ${(await Auth.currentSession())
-        //       .getIdToken()
-        //       .getJwtToken()}`,
-        //   };
-        // },
+        custom_header: async () => { 
+          return { Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}` }
+        }
       },
     ],
   },
 });
+
 
 ReactDOM.render(
   <React.StrictMode>
