@@ -38,8 +38,8 @@ export default function Enquiry() {
       ) : (
         <>
         <Card className='mt-4 align-items-center d-flex justify-content-center'>
-        <Card.Body className='mt-0' bg-secondary>
-          <div class="p-3 mb-2 bg-warning text-black">
+        <Card.Body className='mt-0'>
+          <div className="p-3 mb-2 bg-warning text-black">
             <h4 className='card-title text-center'>Enquiry Service</h4>
               This screen displays all bicycle licences that have been registered by the currently authenticated
               user. This prevents a user from seeing data created by someone else. 
