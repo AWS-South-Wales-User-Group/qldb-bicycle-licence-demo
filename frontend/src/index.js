@@ -1,9 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import AuthStateApp from "./AuthStateApp";
+import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import API from "@aws-amplify/api";
 import Auth from "@aws-amplify/auth";
+import { BrowserRouter as Router } from "react-router-dom";
+
 
 Auth.configure({
   Auth: {
@@ -29,9 +31,12 @@ API.configure({
   },
 });
 
+
 ReactDOM.render(
   <React.StrictMode>
-    <AuthStateApp />
+    <Router>
+      <App />
+    </Router>
   </React.StrictMode>,
   document.getElementById("root")
 );
