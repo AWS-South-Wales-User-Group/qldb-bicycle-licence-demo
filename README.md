@@ -75,14 +75,34 @@ npm ci
 npm run start
 ```
 
-## Load testing
+### Streams DynamoDB
 
-A `Serverless Artillery` setup has been configured to allow an initial data load to be carried out.
+The `Streams DynamoDB` component, consists of a `QLDB Stream` that publishes records to a `Kinesis Data Stream`, and a `Lambda` function that consumes messages from this stream and populates a table in `DynamoDB`. There is also an enquiry exposed against `DynamoDB`. This can be deployed as follows:
 
-```bash
-cd loadtesting
-npm run slsart -- deploy --stage dev
-npm run slsart -- invoke --stage dev
+``` bash
+cd streams-dynamodb
+npm ci
+npm run sls -- deploy [--stage {stage-name}]
 ```
 
-For more information about the load testing setup, see the individual [readme](/loadtest) file.
+### Streams Elasticsearch
+
+The `Streams Elasticsearch` component, consists of a `QLDB Stream` that publishes records to a `Kinesis Data Stream`, and a `Lambda` function that consumes messages from this stream and populates an index in `Amazon Elasticsearch`. There is also an enquiry exposed against `Elasticsearch`. This can be deployed as follows:
+
+``` bash
+cd streams-es
+npm ci
+npm run sls -- deploy [--stage {stage-name}]
+```
+
+In some cases, the initial deployment may fail with the following error message:
+
+```bash
+'ValidationException: Before you can proceed, you must enable a service-linked role to give Amazon ES permissions to access your VPC'
+```
+
+In this case, create a service-linked role first using the `AWS CLI` with the following command:
+
+```bash
+aws iam create-service-linked-role --aws-service-name es.amazonaws.com
+```
