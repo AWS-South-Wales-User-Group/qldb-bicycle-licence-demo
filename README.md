@@ -75,6 +75,10 @@ npm ci
 npm run start
 ```
 
+## Setting up QLDB Streams
+
+QLDB has the functionality available to stream out all revisions that have been made to a journal since it was first created using QLDB Streams. There are two examples available to deploy - one which uses DynamoDB and one which uses Elasticsearch. They are setup in different folders to allow them to be managed individually. Please note that some of these services, especially Elasticsearch, will incur charges on your AWS account.
+
 ### Streams DynamoDB
 
 The `Streams DynamoDB` component, consists of a `QLDB Stream` that publishes records to a `Kinesis Data Stream`, and a `Lambda` function that consumes messages from this stream and populates a table in `DynamoDB`. There is also an enquiry exposed against `DynamoDB`. This can be deployed as follows:
