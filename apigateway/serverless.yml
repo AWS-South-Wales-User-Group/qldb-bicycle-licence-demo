@@ -8,6 +8,7 @@ provider:
   stage: ${opt:stage, 'dev'}
   region: eu-west-1
   stackName: ${self:service}
+  lambdaHashingVersion: "20201221"
 
 resources:
   Resources:
@@ -74,16 +75,6 @@ resources:
               CloudWatchMetricsEnabled: true
               MetricName: RateLimiter
               SampledRequestsEnabled: true
-              
-    MyWAFAssociation:
-      Type: AWS::WAFv2::WebACLAssociation
-      Properties: 
-        ResourceArn:
-          !Sub 
-            - arn:aws:apigateway:${AWS::Region}::/restapis/${ApiId}/stages/${ApiStage}
-            - ApiId: !Ref QldbApiGW
-              ApiStage: ${opt:stage, 'dev'}
-        WebACLArn: !GetAtt MyWAFACL.Arn
 
   Outputs:
     apiGatewayRestApiId:
@@ -104,3 +95,8 @@ resources:
           - RootResourceId
       Export:
         Name: QldbApiGatewayDemo-rootResourceId
+
+    webACLReferenceARN:
+      Value: !GetAtt MyWAFACL.Arn
+      Export:
+        Name: webACLReference

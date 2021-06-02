@@ -63,6 +63,7 @@ functions:
           throttling:
             maxRequestsPerSecond: 100
             maxConcurrentRequests: 50
+
   updateLicence:
     name: update-bicycle-licence-demo-${self:provider.stage}
     handler: functions/update-licence.handler
@@ -184,6 +185,17 @@ resources:
       Properties:
         ServiceToken: !GetAtt CreateQldbDemoIndexLambdaFunction.Arn
         Version: 1.1  #change this to force redeploy 
+
+    MyWAFAssociation:
+      DependsOn: qldbIndex
+      Type: AWS::WAFv2::WebACLAssociation
+      Properties: 
+        ResourceArn:
+          !Sub 
+            - arn:aws:apigateway:${AWS::Region}::/restapis/${ApiId}/stages/${self:provider.stage}
+            - { ApiId: !ImportValue QldbApiGatewayDemo-restApiId }
+        WebACLArn: !ImportValue webACLReference
+
   
   Outputs:
     qldbBicycleLicenceLedger:
