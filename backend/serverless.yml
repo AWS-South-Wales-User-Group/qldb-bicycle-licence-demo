@@ -33,14 +33,10 @@ provider:
 plugins:
   - serverless-iam-roles-per-function
   - serverless-pseudo-parameters
-  - serverless-webpack
   - serverless-api-gateway-throttling
+  - serverless-esbuild
 
 custom:
-  webpack:
-    webpackConfig: 'webpack.config.js'   # Name of webpack configuration file
-    includeModules: false   # Node modules configuration for packaging
-    packager: 'npm'   # Packager that will be used to package your external modules
   # Configures throttling settings for the API Gateway stage
   # They apply to all http endpoints, unless specifically overridden
   apiGatewayThrottling:
