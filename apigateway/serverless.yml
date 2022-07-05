@@ -8,6 +8,8 @@ provider:
   stage: ${opt:stage, 'dev'}
   region: eu-west-1
   stackName: ${self:service}
+  tracing:
+    apiGateway: true
 
 resources:
   Resources:
