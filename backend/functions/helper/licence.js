@@ -2,7 +2,7 @@
  * Helper utility that provides the implementation for interacting with QLDB
  */
 
-const Log = require('@dazn/lambda-powertools-logger');
+//const Log = require('@dazn/lambda-powertools-logger');
 const { getQldbDriver } = require('./ConnectToLedger');
 const AWSXRay = require('aws-xray-sdk-core');
 AWSXRay.captureAWS(require('aws-sdk'));
@@ -16,15 +16,15 @@ const LicenceNotFoundError = require('../lib/LicenceNotFoundError');
  * @returns The number of records that exist for the email address
  */
 async function checkEmailUnique(txn, email) {
-  Log.debug('In checkEmailUnique function');
+  console.log('In checkEmailUnique function');
   const query = 'SELECT email FROM BicycleLicence AS b WHERE b.email = ?';
   let recordsReturned;
   await txn.execute(query, email).then((result) => {
     recordsReturned = result.getResultList().length;
     if (recordsReturned === 0) {
-      Log.debug(`No records found for ${email}`);
+      console.log(`No records found for ${email}`);
     } else {
-      Log.debug(`Record already exists for ${email}`);
+      console.log(`Record already exists for ${email}`);
     }
   });
   return recordsReturned;
@@ -37,7 +37,7 @@ async function checkEmailUnique(txn, email) {
  * @returns The Result from executing the statement
  */
 async function createBicycleLicence(txn, licenceDoc) {
-  Log.debug('In the createBicycleLicence function');
+  console.log('In the createBicycleLicence function');
   const statement = 'INSERT INTO BicycleLicence ?';
   return txn.execute(statement, licenceDoc);
 }
@@ -51,7 +51,7 @@ async function createBicycleLicence(txn, licenceDoc) {
  * @returns The Result from executing the statement
  */
 async function addGuid(txn, docId, email) {
-  Log.debug(`In the addGuid function with docId ${docId} and email ${email}`);
+  console.log(`In the addGuid function with docId ${docId} and email ${email}`);
   const statement = 'UPDATE BicycleLicence as b SET b.licenceId = ? WHERE b.email = ?';
   return txn.execute(statement, docId, email);
 }
@@ -68,7 +68,7 @@ async function addGuid(txn, docId, email) {
  * @returns The JSON record of the new licence reecord.
  */
 const createLicence = async (firstName, lastName, email, street, county, postcode, userId, event) => {
-  Log.debug(`In createLicence function with: first name ${firstName} last name ${lastName} email ${email} street ${street} county ${county} and postcode ${postcode}`);
+  console.log(`In createLicence function with: first name ${firstName} last name ${lastName} email ${email} street ${street} county ${county} and postcode ${postcode}`);
 
   let licence;
   // Get a QLDB Driver instance
@@ -111,7 +111,7 @@ const createLicence = async (firstName, lastName, email, street, county, postcod
  * @returns The Result from executing the statement
  */
 async function getLicenceRecordByEmail(txn, email) {
-  Log.debug('In getLicenceRecordByEmail function');
+  console.log('In getLicenceRecordByEmail function');
   const query = 'SELECT * FROM BicycleLicence WHERE email = ?';
   return txn.execute(query, email);
 }
@@ -123,7 +123,7 @@ async function getLicenceRecordByEmail(txn, email) {
  * @returns The Result from executing the statement
  */
 async function getLicenceRecordById(txn, id, userId) {
-  Log.debug('In getLicenceRecordById function');
+  console.log('In getLicenceRecordById function');
   const query = 'SELECT * FROM BicycleLicence AS b WHERE b.licenceId = ? AND b.userId = ?'
   return txn.execute(query, id, userId);
 }
@@ -135,7 +135,7 @@ async function getLicenceRecordById(txn, id, userId) {
  * @returns The Result from executing the statement
  */
 async function getLicenceRecordHistoryById(txn, id) {
-  Log.debug('In getLicenceRecordHistoryById function');
+  console.log('In getLicenceRecordHistoryById function');
   const query = 'SELECT * FROM history(BicycleLicence) WHERE metadata.id = ?';
   return txn.execute(query, id);
 }
@@ -153,7 +153,7 @@ async function getLicenceRecordHistoryById(txn, id) {
  * @returns The Result from executing the statement
  */
 async function addContactUpdatedEvent(txn, licenceId, street, county, postcode, eventInfo) {
-  Log.debug(`In the addContactUpdatedEvent function with licenceId ${licenceId}, street ${street}, county ${county}, postcode ${postcode} and events ${eventInfo}`);
+  console.log(`In the addContactUpdatedEvent function with licenceId ${licenceId}, street ${street}, county ${county}, postcode ${postcode} and events ${eventInfo}`);
   const statement = 'UPDATE BicycleLicence SET street = ?, county = ?, postcode = ?, events = ? WHERE licenceId = ?';
   return txn.execute(statement, street, county, postcode, eventInfo, licenceId);
 }
@@ -167,7 +167,7 @@ async function addContactUpdatedEvent(txn, licenceId, street, county, postcode, 
  * @returns The Result from executing the statement
  */
 async function addPointsUpdatedEvent(txn, licenceId, points, eventInfo) {
-  Log.debug(`In the addPointsUpdatedEvent function with licenceId ${licenceId}, points ${points} and events ${eventInfo}`);
+  console.log(`In the addPointsUpdatedEvent function with licenceId ${licenceId}, points ${points} and events ${eventInfo}`);
   const statement = 'UPDATE BicycleLicence SET penaltyPoints = ?, events = ? WHERE licenceId = ?';
   return txn.execute(statement, points, eventInfo, licenceId);
 }
@@ -180,7 +180,7 @@ async function addPointsUpdatedEvent(txn, licenceId, points, eventInfo) {
  * @returns A JSON document to return to the client
  */
 const updateLicence = async (licenceId, points, userId, eventInfo) => {
-  Log.debug(`In updateLicence function with licenceId ${licenceId}, points ${points} and eventInfo ${eventInfo}`);
+  console.log(`In updateLicence function with licenceId ${licenceId}, points ${points} and eventInfo ${eventInfo}`);
 
   let licence;
   // Get a QLDB Driver instance
@@ -219,7 +219,7 @@ const updateLicence = async (licenceId, points, userId, eventInfo) => {
  * @returns A JSON document to return to the client
  */
 const updateContact = async (licenceId, street, county, postcode, userId, eventInfo) => {
-  Log.debug(`In updateContact function with licenceId ${licenceId} street ${street} county ${county} and postcode ${postcode}`);
+  console.log(`In updateContact function with licenceId ${licenceId} street ${street} county ${county} and postcode ${postcode}`);
 
   let licence;
   // Get a QLDB Driver instance
@@ -251,7 +251,7 @@ const updateContact = async (licenceId, street, county, postcode, userId, eventI
  * @returns The Result from executing the statement
  */
 async function deleteLicenceRecordById(txn, id) {
-  Log.debug('In deleteLicenceRecordById function');
+  console.log('In deleteLicenceRecordById function');
   const query = 'DELETE FROM BicycleLicence AS b WHERE b.licenceId = ?';
   return txn.execute(query, id);
 }
@@ -262,7 +262,7 @@ async function deleteLicenceRecordById(txn, id) {
  * @returns The JSON document to return to the client
  */
 const getLicence = async (licenceId, userId) => {
-  Log.debug(`In getLicence function with licenceId ${licenceId} and userId ${userId}`);
+  console.log(`In getLicence function with licenceId ${licenceId} and userId ${userId}`);
 
   let licence;
   // Get a QLDB Driver instance
@@ -287,7 +287,7 @@ const getLicence = async (licenceId, userId) => {
  * @returns The JSON document to return to the client
  */
 const getLicenceHistory = async (licenceId) => {
-  Log.debug(`In getLicence function with licenceId ${licenceId}`);
+  console.log(`In getLicence function with licenceId ${licenceId}`);
 
   let licence;
   // Get a QLDB Driver instance
@@ -312,7 +312,7 @@ const getLicenceHistory = async (licenceId) => {
  * @returns The JSON response to return to the client
  */
 const deleteLicence = async (id, userId) => {
-  Log.debug(`In deleteLicence function with LicenceId ${id} and userId ${userId}`);
+  console.log(`In deleteLicence function with LicenceId ${id} and userId ${userId}`);
 
   let licence;
   // Get a QLDB Driver instance

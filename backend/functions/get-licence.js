@@ -1,16 +1,25 @@
 /*
  * Lambda function that implements the get licence functionality
  */
-const Log = require('@dazn/lambda-powertools-logger');
+const { Logger, injectLambdaContext } = require('@aws-lambda-powertools/logger');
+const { Tracer, captureLambdaHandler } = require('@aws-lambda-powertools/tracer');
+const { Metrics, logMetrics } = require('@aws-lambda-powertools/metrics');
 const { getLicence } = require('./helper/licence');
 const LicenceNotFoundError = require('./lib/LicenceNotFoundError');
 const middy = require('@middy/core')
 const cors = require('@middy/http-cors')
 
+//  Params fetched from the env vars
+const logger = new Logger();
+const tracer = new Tracer();
+const metrics = new Metrics();
+
+tracer.captureAWS(require('aws-sdk'));
+
 const handler = async (event) => {
   const { licenceid } = event.pathParameters;
   const userId = event.requestContext.authorizer.claims.sub;
-  Log.debug(`In the get-licence handler with licenceid ${licenceid} and userId ${userId}`);
+  logger.debug(`In the get-licence handler with licenceid ${licenceid} and userId ${userId}`);
 
   try {
     const response = await getLicence(licenceid, userId);
@@ -37,4 +46,8 @@ const handler = async (event) => {
   }
 };
 
-module.exports.handler = middy(handler).use(cors())
+module.exports.handler = middy(handler)
+  .use(injectLambdaContext(logger))
+  .use(captureLambdaHandler(tracer))
+  .use(logMetrics(metrics, { captureColdStartMetric: true }))
+  .use(cors());

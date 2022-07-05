@@ -1,24 +1,32 @@
 /*
  * Lambda function that implements the create licence functionality
  */
-const Log = require('@dazn/lambda-powertools-logger');
-const dateFormat = require('dateformat');
+const { Logger, injectLambdaContext } = require('@aws-lambda-powertools/logger');
+const { Tracer, captureLambdaHandler } = require('@aws-lambda-powertools/tracer');
+const { Metrics, MetricUnits, logMetrics } = require('@aws-lambda-powertools/metrics');
+const middy = require('@middy/core');
+const date = require('date-and-time');
 const { createLicence } = require('./helper/licence');
 const LicenceIntegrityError = require('./lib/LicenceIntegrityError');
-const middy = require('@middy/core')
 const cors = require('@middy/http-cors')
+
+//  Params fetched from the env vars
+const logger = new Logger();
+const tracer = new Tracer();
+const metrics = new Metrics();
+
+tracer.captureAWS(require('aws-sdk'));
 
 const handler = async (event) => {
   const {
     firstName, lastName, email, street, county, postcode,
   } = JSON.parse(event.body);
   const userId = event.requestContext.authorizer.claims.sub;
-  Log.debug(`In the create licence handler with: first name ${firstName} last name ${lastName} email ${email} street ${street} and county ${county} and postcode ${postcode} and userId ${userId}`);
+  logger.debug(`In the create licence handler with: first name ${firstName} last name ${lastName} email ${email} street ${street} and county ${county} and postcode ${postcode} and userId ${userId}`);
 
 
   try {
-    const eventInfo = { eventName: 'BicycleLicenceCreated', eventDate: dateFormat(new Date(), 'isoDateTime') };
-    console.log('About to call out to create licence');
+    const eventInfo = { eventName: 'BicycleLicenceCreated', eventDate: date.format(new Date(), 'YYYY/MM/DD HH:mm:ss') };
     const response = await createLicence(
       firstName, lastName, email, street, county, postcode, userId, eventInfo
     );
@@ -27,12 +35,10 @@ const handler = async (event) => {
       body: JSON.stringify(response),
     };
   } catch (error) {
-    console.log('Caught an error in the handler');
     if (error instanceof LicenceIntegrityError) {
-      console.log('back in handler after having caught the LicenceIntegrityError');
       return error.getHttpResponse();
     }
-    Log.error(`Error returned: ${error}`);
+    logger.error(`Error returned: ${error}`);
     const errorBody = {
       status: 500,
       title: error.name,
@@ -45,4 +51,8 @@ const handler = async (event) => {
   }
 };
 
-module.exports.handler = middy(handler).use(cors())
+module.exports.handler = middy(handler)
+.use(injectLambdaContext(logger))
+.use(captureLambdaHandler(tracer))
+.use(logMetrics(metrics, { captureColdStartMetric: true }))
+.use(cors());

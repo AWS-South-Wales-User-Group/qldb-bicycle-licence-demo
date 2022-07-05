@@ -1,24 +1,33 @@
-const Log = require('@dazn/lambda-powertools-logger');
-const dateFormat = require('dateformat');
-const { updateLicence } = require('./helper/licence');
-const middy = require('@middy/core')
-const cors = require('@middy/http-cors')
 /*
  * Lambda function that implements the update licence functionality
  */
+const { Logger, injectLambdaContext } = require('@aws-lambda-powertools/logger');
+const { Tracer, captureLambdaHandler } = require('@aws-lambda-powertools/tracer');
+const { Metrics, logMetrics } = require('@aws-lambda-powertools/metrics');
+const date = require('date-and-time');
+const { updateLicence } = require('./helper/licence');
+const middy = require('@middy/core')
+const cors = require('@middy/http-cors')
 
 const LicenceIntegrityError = require('./lib/LicenceIntegrityError');
+
+
+const logger = new Logger();
+const tracer = new Tracer();
+const metrics = new Metrics();
+
+tracer.captureAWS(require('aws-sdk'));
 
 const handler = async (event) => {
   const { licenceId, points } = JSON.parse(event.body);
   const userId = event.requestContext.authorizer.claims.sub;
-  Log.debug(`In the update licence handler with licenceId ${licenceId} and points ${points}`);
+  logger.debug(`In the update licence handler with licenceId ${licenceId} and points ${points}`);
   let eventInfo;
   try {
     if (points > 0) {
-      eventInfo = { eventName: 'PenaltyPointsAdded', points: points, eventDate: dateFormat(new Date(), 'isoDateTime') };
+      eventInfo = { eventName: 'PenaltyPointsAdded', points: points, eventDate: date.format(new Date(), 'YYYY/MM/DD HH:mm:ss') };
     } else {
-      eventInfo = { eventName: 'PenaltyPointsRemoved', points: points, eventDate: dateFormat(new Date(), 'isoDateTime') };
+      eventInfo = { eventName: 'PenaltyPointsRemoved', points: points, eventDate: date.format(new Date(), 'YYYY/MM/DD HH:mm:ss') };
     }
     const response = await updateLicence(licenceId, points, userId, eventInfo);
     return {
@@ -29,7 +38,7 @@ const handler = async (event) => {
     if (error instanceof LicenceIntegrityError) {
       return error.getHttpResponse();
     }
-    Log.error(`Error returned: ${error}`);
+    logger.error(`Error returned: ${error}`);
     const errorBody = {
       status: 500,
       title: error.name,
@@ -42,4 +51,8 @@ const handler = async (event) => {
   }
 };
 
-module.exports.handler = middy(handler).use(cors())
+module.exports.handler = middy(handler)
+  .use(injectLambdaContext(logger))
+  .use(captureLambdaHandler(tracer))
+  .use(logMetrics(metrics, { captureColdStartMetric: true }))
+  .use(cors());

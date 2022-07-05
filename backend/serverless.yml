@@ -1,16 +1,15 @@
-service: qldb-bicycle-licence-demo
+service: qldb-bicycle-licence
 
-frameworkVersion: '2'
+frameworkVersion: '3'
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs16.x
   memorySize: 512
   stage: ${opt:stage, 'dev'}
   region: eu-west-1
   logRetentionInDays: 7 # Set the default RetentionInDays for a CloudWatch LogGroup
   tracing:
-    apiGateway: true
     lambda: true # Optional, can be true (true equals 'Active'), 'Active' or 'PassThrough'
   apiGateway:
     restApiId: !ImportValue QldbApiGatewayDemo-restApiId
@@ -19,20 +18,23 @@ provider:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED	: "1"
     LEDGER_NAME: 
       Ref: qldbLedger
-  iamRoleStatements:
-    - Effect: Allow
-      Action: 
-        - qldb:SendCommand
-      Resource: arn:aws:qldb:#{AWS::Region}:#{AWS::AccountId}:ledger/qldb-bicycle-licence-demo-${self:provider.stage}
-    - Effect: "Allow"
-      Action:
-        - "xray:PutTraceSegments"
-        - "xray:PutTelemetryRecords"
-      Resource: "*" # Restrict resource to minimum required
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: 
+            - qldb:SendCommand
+          Resource: 
+            - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/qldb-bicycle-licence-${self:provider.stage}'
+
+        - Effect: "Allow"
+          Action:
+            - "xray:PutTraceSegments"
+            - "xray:PutTelemetryRecords"
+          Resource: "*" # Restrict resource to minimum required
 
 plugins:
   - serverless-iam-roles-per-function
-  - serverless-pseudo-parameters
   - serverless-api-gateway-throttling
   - serverless-esbuild
 
@@ -46,8 +48,17 @@ custom:
 functions:
 
   createLicence:
-    name: create-bicycle-licence-demo-${self:provider.stage}
+    name: create-bicycle-licence-${self:provider.stage}
     handler: functions/create-licence.handler
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow       
+        Action: 
+          - qldb:PartiQLInsert
+          - qldb:PartiQLSelect
+          - qldb:PartiQLUpdate
+        Resource: 
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/qldb-bicycle-licence-${self:provider.stage}/table/*'
     events:
       - http:
           path: /licences
@@ -61,8 +72,16 @@ functions:
             maxConcurrentRequests: 50
 
   updateLicence:
-    name: update-bicycle-licence-demo-${self:provider.stage}
+    name: update-bicycle-licence-${self:provider.stage}
     handler: functions/update-licence.handler
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow       
+        Action: 
+          - qldb:PartiQLSelect
+          - qldb:PartiQLUpdate
+        Resource: 
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/qldb-bicycle-licence-${self:provider.stage}/table/*'
     events:
       - http:
           path: /licences
@@ -76,8 +95,16 @@ functions:
             maxConcurrentRequests: 50
 
   updateContact:
-    name: update-bicycle-contact-demo-${self:provider.stage}
+    name: update-bicycle-contact-${self:provider.stage}
     handler: functions/update-contact.handler
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow       
+        Action: 
+          - qldb:PartiQLSelect
+          - qldb:PartiQLUpdate
+        Resource: 
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/qldb-bicycle-licence-${self:provider.stage}/table/*'
     events:
       - http:
           path: /licences/contact
@@ -91,8 +118,15 @@ functions:
             maxConcurrentRequests: 50
 
   getLicence:
-    name: get-bicycle-licence-demo-${self:provider.stage}
+    name: get-bicycle-licence-${self:provider.stage}
     handler: functions/get-licence.handler
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow       
+        Action: 
+          - qldb:PartiQLSelect
+        Resource: 
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/qldb-bicycle-licence-${self:provider.stage}/table/*'
     events:
       - http:
           path: /licences/{licenceid}
@@ -106,8 +140,15 @@ functions:
             maxConcurrentRequests: 50
 
   getLicenceHistory:
-    name: get-bicycle-licence-history-demo-${self:provider.stage}
+    name: get-bicycle-licence-history-${self:provider.stage}
     handler: functions/get-licence-history.handler
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow       
+        Action: 
+          - qldb:PartiQLHistoryFunction
+        Resource: 
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/qldb-bicycle-licence-${self:provider.stage}/table/*'
     events:
       - http:
           path: /licences/history/{licenceid}
@@ -121,8 +162,16 @@ functions:
             maxConcurrentRequests: 50
 
   deleteLicence:
-    name: delete-bicycle-licence-demo-${self:provider.stage}
+    name: delete-bicycle-licence-${self:provider.stage}
     handler: functions/delete-licence.handler
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow       
+        Action: 
+          - qldb:PartiQLSelect
+          - qldb:PartiQLDelete
+        Resource: 
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/qldb-bicycle-licence-${self:provider.stage}/table/*'
     events:
       - http:
           path: /licences
@@ -136,16 +185,30 @@ functions:
             maxConcurrentRequests: 50
             
   createQldbDemoTable:
-    name: qldb-licence-table-demo-${self:provider.stage}
+    name: qldb-licence-table-${self:provider.stage}
     handler: functions/createQldbTable.handler
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow       
+        Action: 
+          - qldb:PartiQLCreateTable
+        Resource: 
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/qldb-bicycle-licence-${self:provider.stage}/*'
     memorySize: 256
     timeout: 6
     environment:
       LICENCE_TABLE_NAME: BicycleLicence
 
   createQldbDemoIndex:
-    name: qldb-licence-index-demo-${self:provider.stage}
+    name: qldb-licence-index-${self:provider.stage}
     handler: functions/createQldbIndex.handler
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow       
+        Action: 
+          - qldb:PartiQLCreateIndex
+        Resource: 
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/qldb-bicycle-licence-${self:provider.stage}/*'
     memorySize: 256
     timeout: 6
     environment:
@@ -160,9 +223,9 @@ resources:
     qldbLedger:
       Type: AWS::QLDB::Ledger
       Properties:
-        Name: qldb-bicycle-licence-demo-${self:provider.stage}
+        Name: qldb-bicycle-licence-${self:provider.stage}
         DeletionProtection: false
-        PermissionsMode: ALLOW_ALL
+        PermissionsMode: STANDARD
         Tags:
           - 
             Key: name

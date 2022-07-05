@@ -3,46 +3,60 @@
  * in QLDB using CloudFormation
  */
 
-const Log = require('@dazn/lambda-powertools-logger');
+const { Logger, injectLambdaContext } = require('@aws-lambda-powertools/logger');
+const { Tracer, captureLambdaHandler } = require('@aws-lambda-powertools/tracer');
+const { Metrics, MetricUnits, logMetrics } = require('@aws-lambda-powertools/metrics');
+const middy = require('@middy/core');
 const response = require('cfn-response-promise');
 const { QldbDriver } = require('amazon-qldb-driver-nodejs');
 const qldbDriver = new QldbDriver(process.env.LEDGER_NAME);
 
+const logger = new Logger();
+const tracer = new Tracer();
+const metrics = new Metrics();
+
+tracer.captureAWS(require('aws-sdk'));
+
 async function createTable(txn, tableName) {
   const statement = `CREATE TABLE ${tableName}`;
   return txn.execute(statement).then((result) => {
-    Log.debug(`Successfully created table ${tableName}.`);
+    logger.debug(`Successfully created table ${tableName}.`);
     return result;
   });
 }
 
-module.exports.handler = async (event, context) => {
-  Log.debug(`QLDB Table request received:\n${JSON.stringify(event, null, 2)}`);
+const handler = async (event, context) => {
+  logger.debug(`QLDB Table request received:\n${JSON.stringify(event, null, 2)}`);
 
   try {
     if (event.RequestType === 'Create') {
-      Log.debug('Attempting to create QLDB table');
+      logger.debug('Attempting to create QLDB table');
       try {
         await qldbDriver.executeLambda(async (txn) => {
           await createTable(txn, process.env.LICENCE_TABLE_NAME);
         });
       } catch (e) {
-        Log.error(`Unable to connect: ${e}`);
+        logger.error(`Unable to connect: ${e}`);
         await response.send(event, context, response.FAILED);
       }
       const responseData = { requestType: event.RequestType };
       await response.send(event, context, response.SUCCESS, responseData);
     } else if (event.RequestType === 'Delete') {
-      Log.debug('Request received to delete QLDB table');
+      logger.debug('Request received to delete QLDB table');
       // Do nothing as table will be deleted as part of deleting QLDB Ledger
       const responseData = { requestType: event.RequestType };
       await response.send(event, context, response.SUCCESS, responseData);
     } else {
-      Log.error('Did not recognise event type resource');
+      logger.error('Did not recognise event type resource');
       await response.send(event, context, response.FAILED);
     }
   } catch (error) {
-    Log.error(`Failed to create table in custom resource: ${JSON.stringify(error)}`);
+    logger.error(`Failed to create table in custom resource: ${JSON.stringify(error)}`);
     await response.send(event, context, response.FAILED);
   }
 };
+
+module.exports.handler = middy(handler)
+  .use(injectLambdaContext(logger))
+  .use(captureLambdaHandler(tracer))
+  .use(logMetrics(metrics, { captureColdStartMetric: true }));
