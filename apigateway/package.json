@@ -17,6 +17,6 @@
     "url": "https://github.com/AWS-South-Wales-User-Group/qldb-bicycle-licence/issues"
   },
   "devDependencies": {
-    "serverless": "^2.20.1"
+    "serverless": "^3.19.0"
   }
 }

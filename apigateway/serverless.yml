@@ -1,14 +1,13 @@
-service: qldb-apigateway-demo
+service: qldb-apigw-demo
 
-frameworkVersion: '2'
+frameworkVersion: '3'
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs16.x
   stage: ${opt:stage, 'dev'}
   region: eu-west-1
   stackName: ${self:service}
-  lambdaHashingVersion: "20201221"
 
 resources:
   Resources:
