@@ -9,9 +9,9 @@ import { BrowserRouter as Router } from "react-router-dom";
 
 Auth.configure({
   Auth: {
-    region: "eu-west-1",
-    userPoolId: "eu-west-1_TL1zlExKE",
-    userPoolWebClientId: "6s7aqship3e29bg4slrs7bp0ud"
+    region: "region",
+    userPoolId: "userPoolId",
+    userPoolWebClientId: "userPoolWebClientId"
   },
 });
 
@@ -20,7 +20,7 @@ API.configure({
     endpoints: [
       {
         endpoint:
-          "https://a8ffyaj6f6.execute-api.eu-west-1.amazonaws.com/prod",
+          "https://endpoint",
         name: "ApiGatewayRestApi",
         region: "eu-west-1",
         custom_header: async () => { 
