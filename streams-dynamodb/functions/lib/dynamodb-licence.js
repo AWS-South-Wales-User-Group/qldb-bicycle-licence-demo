@@ -1,4 +1,5 @@
-const Log = require('@dazn/lambda-powertools-logger');
+
+const { Logger, injectLambdaContext } = require('@aws-lambda-powertools/logger');
 const LicenceNotFoundError = require('./LicenceNotFoundError');
 
 // see https://theburningmonk.com/2019/03/just-how-expensive-is-the-full-aws-sdk/
@@ -9,10 +10,13 @@ const dynamodb = new DynamoDB.DocumentClient();
 const AWSXRay = require('aws-xray-sdk-core');
 AWSXRay.captureAWS(require('aws-sdk'));
 
+//  Params fetched from the env vars
+const logger = new Logger();
+
 const { TABLE_NAME } = process.env;
 
 const deleteLicence = async (id, version) => {
-  Log.debug(`In deleteLicence function with id ${id} and version ${version}`);
+  logger.debug(`In deleteLicence function with id ${id} and version ${version}`);
 
   const params = {
     TableName: TABLE_NAME,
@@ -27,14 +31,14 @@ const deleteLicence = async (id, version) => {
 
   try {
     await dynamodb.update(params).promise();
-    Log.debug(`Successful deleted id ${id} with version ${version}`);    
+    logger.debug(`Successful deleted id ${id} with version ${version}`);    
   } catch(err) {
-    Log.debug(`Unable to update licence: ${id}. Error: ${err}`);
+    logger.debug(`Unable to update licence: ${id}. Error: ${err}`);
   }
 };
 
 const getLicence = async (userId, id) => {
-  Log.debug(`In getLicence function with id ${id} and userId ${userId}`);
+  logger.debug(`In getLicence function with id ${id} and userId ${userId}`);
 
   const params = {
     TableName: TABLE_NAME,
@@ -62,7 +66,7 @@ const getLicence = async (userId, id) => {
 
 
 const findAllLicences = async (userId) => {
-  Log.debug(`In findAllLicences function with userId ${userId}`);
+  logger.debug(`In findAllLicences function with userId ${userId}`);
 
   const params = {
     TableName: TABLE_NAME,
@@ -84,7 +88,7 @@ const findAllLicences = async (userId) => {
 };
 
 const updateLicence = async (id, points, postcode, version, userId) => {
-  Log.debug(`In updateLicence function with id ${id} points ${points} postcode ${postcode} and version ${version}`);
+  logger.debug(`In updateLicence function with id ${id} points ${points} postcode ${postcode} and version ${version}`);
   const params = {
     TableName: TABLE_NAME,
     Key: { pk: `LICENCE#${id}` },
@@ -102,9 +106,9 @@ const updateLicence = async (id, points, postcode, version, userId) => {
 
   try {
     await dynamodb.update(params).promise();
-    Log.debug(`Successful updated id ${id} with points ${points} postcode ${postcode} and version ${version}`);    
+    logger.debug(`Successful updated id ${id} with points ${points} postcode ${postcode} and version ${version}`);    
   } catch(err) {
-    Log.debug(`Unable to update licence: ${id}. Error: ${err}`);
+    logger.debug(`Unable to update licence: ${id}. Error: ${err}`);
   }
 };
 

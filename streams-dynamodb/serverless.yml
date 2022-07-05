@@ -1,15 +1,15 @@
-service: streams-dynmamodb-demo
+service: streams-dynmamodb
 
-frameworkVersion: '2'
+frameworkVersion: '3'
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs16.x
   memorySize: 512
   stage: ${opt:stage, 'dev'}
   region: eu-west-1
+  logRetentionInDays: 7 # Set the default RetentionInDays for a CloudWatch LogGroup
   tracing:
-    apiGateway: true
     lambda: true # Optional, can be true (true equals 'Active'), 'Active' or 'PassThrough'
   apiGateway:
     restApiId: !ImportValue QldbApiGatewayDemo-restApiId
@@ -21,15 +21,9 @@ provider:
 
 plugins:
   - serverless-iam-roles-per-function
-  - serverless-pseudo-parameters
-  - serverless-webpack
   - serverless-api-gateway-throttling
 
 custom:
-  webpack:
-    webpackConfig: 'webpack.config.js'   # Name of webpack configuration file
-    includeModules: false   # Node modules configuration for packaging
-    packager: 'npm'   # Packager that will be used to package your external modules
   # Configures throttling settings for the API Gateway stage
   # They apply to all http endpoints, unless specifically overridden
   apiGatewayThrottling:
@@ -87,7 +81,7 @@ functions:
           throttling:
             maxRequestsPerSecond: 100
             maxConcurrentRequests: 50
-    iamRoleStatementsName: dynamodb-get-licence-demo-${self:provider.stage}
+    iamRoleStatementsName: dynamodb-get-licence-${self:provider.stage}
     iamRoleStatements: # Grant privilege read from Kinesis work stream 
     - Effect: Allow
       Action:
@@ -101,7 +95,7 @@ functions:
       Resource: "*"
 
   DynamoDBFindAllLicence:
-    name: dynamodb-find-licence-demo-${self:provider.stage}
+    name: dynamodb-find-licence-${self:provider.stage}
     handler: functions/dynamodb-findall.handler
     events:
       - http:
@@ -114,7 +108,7 @@ functions:
           throttling:
             maxRequestsPerSecond: 100
             maxConcurrentRequests: 50
-    iamRoleStatementsName: dynamodb-find-licence-demo-${self:provider.stage}
+    iamRoleStatementsName: dynamodb-find-licence-${self:provider.stage}
     iamRoleStatements: # Grant privilege read from Kinesis work stream 
     - Effect: Allow
       Action:
@@ -142,7 +136,7 @@ resources:
     licenceQldbStreamsDynamodb: 
       Type: AWS::Kinesis::Stream
       Properties: 
-        Name: QLDBBicycleLicence-dynamodb-demo-${self:provider.stage}
+        Name: QLDBBicycleLicence-dynamodb-${self:provider.stage}
         ShardCount: 1
     
     QldbStreamsDynamoDBLambdaFunction:
@@ -155,7 +149,7 @@ resources:
       Type: AWS::DynamoDB::Table
       DeletionPolicy: Delete
       Properties:
-        TableName: qldb-bicycle-licence-demo-${self:provider.stage}
+        TableName: qldb-bicycle-licence-${self:provider.stage}
         AttributeDefinitions: 
           - AttributeName: "pk"
             AttributeType: "S"
@@ -201,7 +195,7 @@ resources:
                     - 'kinesis:ListShards'
                   Resource:
                     Fn::GetAtt: [licenceQldbStreamsDynamodb, Arn]
-        RoleName: qldb-bicycle-dynamodb-demo-role-${self:provider.stage}
+        RoleName: qldb-bicycle-dynamodb-role-${self:provider.stage}
 
     myQLDBStream:
       Type: "AWS::QLDB::Stream"
@@ -215,7 +209,7 @@ resources:
         LedgerName: !ImportValue qldb-bicycle-licence-demo
         RoleArn: 
           Fn::GetAtt: [qldbStreamRole, Arn]
-        StreamName: qldb-dynamodb-stream-demo-${self:provider.stage}
+        StreamName: qldb-dynamodb-stream-${self:provider.stage}
         Tags:
           - Key: name
             Value: qldb-bicycle-licence-demo

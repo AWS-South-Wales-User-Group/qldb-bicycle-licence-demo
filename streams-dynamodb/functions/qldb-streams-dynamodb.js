@@ -2,13 +2,23 @@
  * Lambda function that consumes messages from a Kinesis data stream that uses the
  * Kinesis Aggregated Data Format
  */
-const Log = require('@dazn/lambda-powertools-logger');
+const { Logger, injectLambdaContext } = require('@aws-lambda-powertools/logger');
+const { Tracer, captureLambdaHandler } = require('@aws-lambda-powertools/tracer');
+const { Metrics, MetricUnits, logMetrics } = require('@aws-lambda-powertools/metrics');
+const middy = require('@middy/core');
 const deagg = require('aws-kinesis-agg');
 const ion = require('ion-js');
 const { deleteLicence, updateLicence } = require('./lib/dynamodb-licence');
 
 const computeChecksums = true;
 const REVISION_DETAILS = "REVISION_DETAILS";
+
+//  Params fetched from the env vars
+const logger = new Logger();
+const tracer = new Tracer();
+const metrics = new Metrics();
+
+tracer.captureAWS(require('aws-sdk'));
 
 /**
  * Promisified function to deaggregate Kinesis record
@@ -36,18 +46,18 @@ async function processIon(ionRecord) {
 
   const id = ionRecord.payload.revision.metadata.id.stringValue();
 
-  Log.debug(`Version ${version} and id ${id}`);
+  logger.debug(`Version ${version} and id ${id}`);
 
   // Check to see if the data section exists.
   if (! ionRecord.payload.revision.data) {
-    Log.debug('No data section so handle as a delete');
+    logger.debug('No data section so handle as a delete');
     await deleteLicence(id, version);
   } else {
     const points = ionRecord.payload.revision.data.penaltyPoints.numberValue();
     const postcode = ionRecord.payload.revision.data.postcode.stringValue();
     const userId = ionRecord.payload.revision.data.userId.stringValue();
 
-    Log.debug(`id: ${id}, points: ${points}, postcode: ${postcode}, userId: ${userId}`);
+    logger.debug(`id: ${id}, points: ${points}, postcode: ${postcode}, userId: ${userId}`);
 
     // do an upsert so it doesn't matter if it is the initial version or not
     await updateLicence(id, points, postcode, version, userId);
@@ -70,17 +80,17 @@ async function processRecords(records) {
 
       // Only process records where the record type is REVISION_DETAILS
       if (ionRecord.recordType.stringValue() !== REVISION_DETAILS) {
-        Log.debug(`Skipping record of type ${ion.dumpPrettyText(ionRecord.recordType)}`);
+        logger.debug(`Skipping record of type ${ion.dumpPrettyText(ionRecord.recordType)}`);
       } else {
-        Log.debug(`Ion Record: ${ion.dumpPrettyText(ionRecord.payload)}`);
+        logger.debug(`Ion Record: ${ion.dumpPrettyText(ionRecord.payload)}`);
         await processIon(ionRecord);
       }
     }),
   );
 }
 
-module.exports.handler = async (event, context) => {
-  Log.debug(`In ${context.functionName} processing ${event.Records.length} Kinesis Input Records`);
+const handler = async (event, context) => {
+  logger.debug(`In ${context.functionName} processing ${event.Records.length} Kinesis Input Records`);
   // eslint-disable-next-line no-console
   console.log(`** PRINT MSG: ${JSON.stringify(event, null, 2)}`);
 
@@ -90,5 +100,10 @@ module.exports.handler = async (event, context) => {
       await processRecords(records);
     }),
   );
-  Log.debug('Finished processing in qldb-stream handler');
+  logger.debug('Finished processing in qldb-stream handler');
 };
+
+module.exports.handler = middy(handler)
+.use(injectLambdaContext(logger))
+.use(captureLambdaHandler(tracer))
+.use(logMetrics(metrics, { captureColdStartMetric: true }));
