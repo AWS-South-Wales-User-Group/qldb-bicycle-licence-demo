@@ -4,7 +4,6 @@ frameworkVersion: '3'
 
 provider:
   name: aws
-  runtime: nodejs16.x
   stage: ${opt:stage, 'dev'}
   region: eu-west-1
   stackName: ${self:service}
@@ -52,31 +51,6 @@ resources:
         ProviderARNs: 
           - !GetAtt UserPool.Arn
 
-    MyWAFACL:
-      Type: AWS::WAFv2::WebACL
-      Properties:
-        DefaultAction:
-          Allow: {}
-        Description: Application WAF
-        Scope: REGIONAL
-        VisibilityConfig:
-          CloudWatchMetricsEnabled: true
-          MetricName: AppRules
-          SampledRequestsEnabled: true
-        Rules:
-          - Action:
-              Block: {}
-            Name: RateLimit
-            Priority: 0
-            Statement:
-              RateBasedStatement:
-                AggregateKeyType: "IP"
-                Limit: 100
-            VisibilityConfig:
-              CloudWatchMetricsEnabled: true
-              MetricName: RateLimiter
-              SampledRequestsEnabled: true
-
   Outputs:
     apiGatewayRestApiId:
       Value:
@@ -96,8 +70,3 @@ resources:
           - RootResourceId
       Export:
         Name: QldbApiGatewayDemo-rootResourceId
-
-    webACLReferenceARN:
-      Value: !GetAtt MyWAFACL.Arn
-      Export:
-        Name: webACLReference
