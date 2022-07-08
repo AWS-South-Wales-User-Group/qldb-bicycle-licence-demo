@@ -1,0 +1,14 @@
+{
+  "name": "aws-waf-association",
+  "version": "1.0.0",
+  "description": "Set up AWS WAF with Web ACL and associate with API Gateway stage",
+  "main": "index.js",
+  "scripts": {
+    "sls": "serverless"
+  },
+  "author": "Matt Lewis",
+  "license": "MIT",
+  "devDependencies": {
+    "serverless": "^3.19.0"
+  }
+}
