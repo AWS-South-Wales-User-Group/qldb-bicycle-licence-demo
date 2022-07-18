@@ -24,12 +24,12 @@ const handler = async (event) => {
   const userId = event.requestContext.authorizer.claims.sub;
   logger.debug(`In the create licence handler with: first name ${firstName} last name ${lastName} email ${email} street ${street} and county ${county} and postcode ${postcode} and userId ${userId}`);
 
-
   try {
     const eventInfo = { eventName: 'BicycleLicenceCreated', eventDate: date.format(new Date(), 'YYYY/MM/DD HH:mm:ss') };
     const response = await createLicence(
-      firstName, lastName, email, street, county, postcode, userId, eventInfo
+      logger, firstName, lastName, email, street, county, postcode, userId, eventInfo
     );
+    metrics.addMetric('createLicenceSucceeded', MetricUnits.Count, 1);
     return {
       statusCode: 201,
       body: JSON.stringify(response),
@@ -38,6 +38,7 @@ const handler = async (event) => {
     if (error instanceof LicenceIntegrityError) {
       return error.getHttpResponse();
     }
+    metrics.addMetric('createLicenceFailed', MetricUnits.Count, 1);
     logger.error(`Error returned: ${error}`);
     const errorBody = {
       status: 500,

@@ -15,6 +15,9 @@ provider:
     restApiId: !ImportValue QldbApiGatewayDemo-restApiId
     restApiRootResourceId: !ImportValue QldbApiGatewayDemo-rootResourceId
   environment:
+    LOG_LEVEL: INFO
+    POWERTOOLS_LOGGER_SAMPLE_RATE: 0.2
+    POWERTOOLS_METRICS_NAMESPACE: qldb-bicycle-licence
     AWS_NODEJS_CONNECTION_REUSE_ENABLED	: "1"
     LEDGER_NAME: 
       Ref: qldbLedger
@@ -50,6 +53,8 @@ functions:
   createLicence:
     name: create-bicycle-licence-${self:provider.stage}
     handler: functions/create-licence.handler
+    environment:
+      POWERTOOLS_SERVICE_NAME: qldb-createLicence
     iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow       
@@ -74,6 +79,8 @@ functions:
   updateLicence:
     name: update-bicycle-licence-${self:provider.stage}
     handler: functions/update-licence.handler
+    environment:
+      POWERTOOLS_SERVICE_NAME: qldb-updateLicence
     iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow       
@@ -97,6 +104,8 @@ functions:
   updateContact:
     name: update-bicycle-contact-${self:provider.stage}
     handler: functions/update-contact.handler
+    environment:
+      POWERTOOLS_SERVICE_NAME: qldb-updateContact
     iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow       
@@ -120,6 +129,8 @@ functions:
   getLicence:
     name: get-bicycle-licence-${self:provider.stage}
     handler: functions/get-licence.handler
+    environment:
+      POWERTOOLS_SERVICE_NAME: qldb-getLicence
     iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow       
@@ -142,6 +153,8 @@ functions:
   getLicenceHistory:
     name: get-bicycle-licence-history-${self:provider.stage}
     handler: functions/get-licence-history.handler
+    environment:
+      POWERTOOLS_SERVICE_NAME: qldb-getLicenceHistory
     iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow       
@@ -164,6 +177,8 @@ functions:
   deleteLicence:
     name: delete-bicycle-licence-${self:provider.stage}
     handler: functions/delete-licence.handler
+    environment:
+      POWERTOOLS_SERVICE_NAME: qldb-deleteLicence
     iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow       

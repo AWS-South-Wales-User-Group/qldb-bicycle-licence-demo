@@ -11,20 +11,21 @@ const LicenceNotFoundError = require('../lib/LicenceNotFoundError');
 
 /**
  * Check if an email address already exists
+ * @param logger The logger instance
  * @param txn The {@linkcode TransactionExecutor} for lambda execute.
  * @param email The email address of the licence holder.
  * @returns The number of records that exist for the email address
  */
-async function checkEmailUnique(txn, email) {
-  console.log('In checkEmailUnique function');
+async function checkEmailUnique(logger, txn, email) {
+  logger.debug('In checkEmailUnique function');
   const query = 'SELECT email FROM BicycleLicence AS b WHERE b.email = ?';
   let recordsReturned;
   await txn.execute(query, email).then((result) => {
     recordsReturned = result.getResultList().length;
     if (recordsReturned === 0) {
-      console.log(`No records found for ${email}`);
+      logger.debug(`No records found for ${email}`);
     } else {
-      console.log(`Record already exists for ${email}`);
+      logger.debug(`Record already exists for ${email}`);
     }
   });
   return recordsReturned;
@@ -37,7 +38,6 @@ async function checkEmailUnique(txn, email) {
  * @returns The Result from executing the statement
  */
 async function createBicycleLicence(txn, licenceDoc) {
-  console.log('In the createBicycleLicence function');
   const statement = 'INSERT INTO BicycleLicence ?';
   return txn.execute(statement, licenceDoc);
 }
@@ -51,13 +51,13 @@ async function createBicycleLicence(txn, licenceDoc) {
  * @returns The Result from executing the statement
  */
 async function addGuid(txn, docId, email) {
-  console.log(`In the addGuid function with docId ${docId} and email ${email}`);
   const statement = 'UPDATE BicycleLicence as b SET b.licenceId = ? WHERE b.email = ?';
   return txn.execute(statement, docId, email);
 }
 
 /**
  * Creates a new licence record in the QLDB ledger.
+ * @param logger The logger object passed in
  * @param firstName The first name of the licence holder.
  * @param lastName The last name of the licence holder.
  * @param email The email address of the licence holder.
@@ -67,15 +67,15 @@ async function addGuid(txn, docId, email) {
  * @param event The LicenceHolderCreated event record to add to the document.
  * @returns The JSON record of the new licence reecord.
  */
-const createLicence = async (firstName, lastName, email, street, county, postcode, userId, event) => {
-  console.log(`In createLicence function with: first name ${firstName} last name ${lastName} email ${email} street ${street} county ${county} and postcode ${postcode}`);
+const createLicence = async (logger, firstName, lastName, email, street, county, postcode, userId, event) => {
+  logger.debug(`In createLicence function with: first name ${firstName} last name ${lastName} email ${email} street ${street} county ${county} and postcode ${postcode}`);
 
   let licence;
   // Get a QLDB Driver instance
   const qldbDriver = await getQldbDriver();
   await qldbDriver.executeLambda(async (txn) => {
     // Check if the record already exists assuming email unique for demo
-    const recordsReturned = await checkEmailUnique(txn, email);
+    const recordsReturned = await checkEmailUnique(logger, txn, email);
     if (recordsReturned === 0) {
       const licenceDoc = {
         firstName, lastName, email, street, county, postcode, penaltyPoints: 0, userId, events: event,
@@ -86,7 +86,6 @@ const createLicence = async (firstName, lastName, email, street, county, postcod
       const docId = docIdArray[0].get('documentId').stringValue();
       // Update the record to add the document ID as the GUID in the payload
       await addGuid(txn, docId, email);
-      console.log('Create the licence doc to return');
       licence = {
         licenceId: docId,
         firstName,

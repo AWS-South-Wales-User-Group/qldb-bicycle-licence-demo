@@ -23,8 +23,8 @@ const handler = async (event) => {
 
   try {
     const response = await getLicence(licenceid, userId);
+    metrics.addMetric('getLicenceSucceeded', MetricUnits.Count, 1);
     const licence = JSON.parse(response);
-
     return {
       statusCode: 200,
       body: JSON.stringify(licence),
@@ -33,6 +33,7 @@ const handler = async (event) => {
     if (error instanceof LicenceNotFoundError) {
       return error.getHttpResponse();
     }
+    metrics.addMetric('getLicenceFailed', MetricUnits.Count, 1);
     Log.error(`Error returned: ${error}`);
     const errorBody = {
       status: 500,

@@ -18,21 +18,21 @@
   },
   "homepage": "https://github.com/AWS-South-Wales-User-Group/qldb-bicycle-licence#readme",
   "dependencies": {
-    "@aws-lambda-powertools/logger": "^0.11.1-rc.0",
-    "@aws-lambda-powertools/metrics": "^0.11.1-rc.0",
-    "@aws-lambda-powertools/tracer": "^0.11.1-rc.0",
+    "@aws-lambda-powertools/logger": "^1.0.1",
+    "@aws-lambda-powertools/metrics": "^1.0.1",
+    "@aws-lambda-powertools/tracer": "^1.0.1",
     "@middy/core": "^3.1.0",
     "@middy/http-cors": "^3.1.0",
     "amazon-qldb-driver-nodejs": "^2.2.0",
-    "aws-sdk": "^2.1167.0",
+    "aws-sdk": "^2.1176.0",
     "cfn-response-promise": "^1.1.0",
     "date-and-time": "^2.4.0",
     "ion-js": "^4.3.0",
     "jsbi": "^4.3.0"
   },
   "devDependencies": {
-    "esbuild": "^0.14.48",
-    "serverless": "^3.19.0",
+    "esbuild": "^0.14.49",
+    "serverless": "^3.21.0",
     "serverless-api-gateway-throttling": "^2.0.1",
     "serverless-esbuild": "^1.31.0",
     "serverless-iam-roles-per-function": "^3.2.0"

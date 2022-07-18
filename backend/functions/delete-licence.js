@@ -23,6 +23,7 @@ const handler = async (event) => {
 
   try {
     const response = await deleteLicence(licenceId, userId);
+    metrics.addMetric('deleteLicenceSucceeded', MetricUnits.Count, 1);
     const message = JSON.parse(response);
     return {
       statusCode: 201,
@@ -32,6 +33,7 @@ const handler = async (event) => {
     if (error instanceof LicenceNotFoundError) {
       return error.getHttpResponse();
     }
+    metrics.addMetric('deleteLicenceFailed', MetricUnits.Count, 1);
     logger.error(`Error returned: ${error}`);
     const errorBody = {
       status: 500,

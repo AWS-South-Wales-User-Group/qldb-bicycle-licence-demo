@@ -11,7 +11,6 @@ const cors = require('@middy/http-cors')
 
 const LicenceIntegrityError = require('./lib/LicenceIntegrityError');
 
-
 const logger = new Logger();
 const tracer = new Tracer();
 const metrics = new Metrics();
@@ -30,6 +29,7 @@ const handler = async (event) => {
       eventInfo = { eventName: 'PenaltyPointsRemoved', points: points, eventDate: date.format(new Date(), 'YYYY/MM/DD HH:mm:ss') };
     }
     const response = await updateLicence(licenceId, points, userId, eventInfo);
+    metrics.addMetric('updateLicenceSucceeded', MetricUnits.Count, 1);
     return {
       statusCode: 200,
       body: JSON.stringify(response),
@@ -38,6 +38,7 @@ const handler = async (event) => {
     if (error instanceof LicenceIntegrityError) {
       return error.getHttpResponse();
     }
+    metrics.addMetric('updateLicenceFailed', MetricUnits.Count, 1);
     logger.error(`Error returned: ${error}`);
     const errorBody = {
       status: 500,
