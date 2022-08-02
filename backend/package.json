@@ -33,7 +33,6 @@
   "devDependencies": {
     "esbuild": "^0.14.49",
     "serverless": "^3.21.0",
-    "serverless-api-gateway-throttling": "^2.0.1",
     "serverless-esbuild": "^1.31.0",
     "serverless-iam-roles-per-function": "^3.2.0"
   }

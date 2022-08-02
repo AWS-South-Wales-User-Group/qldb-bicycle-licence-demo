@@ -38,15 +38,7 @@ provider:
 
 plugins:
   - serverless-iam-roles-per-function
-  - serverless-api-gateway-throttling
   - serverless-esbuild
-
-custom:
-  # Configures throttling settings for the API Gateway stage
-  # They apply to all http endpoints, unless specifically overridden
-  apiGatewayThrottling:
-    maxRequestsPerSecond: 1000
-    maxConcurrentRequests: 500
 
 functions:
 
@@ -72,9 +64,6 @@ functions:
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
-          throttling:
-            maxRequestsPerSecond: 100
-            maxConcurrentRequests: 50
 
   updateLicence:
     name: update-bicycle-licence-${self:provider.stage}
@@ -97,10 +86,7 @@ functions:
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
-          throttling:
-            maxRequestsPerSecond: 100
-            maxConcurrentRequests: 50
-
+  
   updateContact:
     name: update-bicycle-contact-${self:provider.stage}
     handler: functions/update-contact.handler
@@ -122,9 +108,6 @@ functions:
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
-          throttling:
-            maxRequestsPerSecond: 100
-            maxConcurrentRequests: 50
 
   getLicence:
     name: get-bicycle-licence-${self:provider.stage}
@@ -146,9 +129,6 @@ functions:
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
-          throttling:
-            maxRequestsPerSecond: 100
-            maxConcurrentRequests: 50
 
   getLicenceHistory:
     name: get-bicycle-licence-history-${self:provider.stage}
@@ -170,9 +150,6 @@ functions:
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
-          throttling:
-            maxRequestsPerSecond: 100
-            maxConcurrentRequests: 50
 
   deleteLicence:
     name: delete-bicycle-licence-${self:provider.stage}
@@ -195,9 +172,6 @@ functions:
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
-          throttling:
-            maxRequestsPerSecond: 100
-            maxConcurrentRequests: 50
             
   createQldbDemoTable:
     name: qldb-licence-table-${self:provider.stage}
