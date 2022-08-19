@@ -3,7 +3,7 @@
  */
 const { Logger, injectLambdaContext } = require('@aws-lambda-powertools/logger');
 const { Tracer, captureLambdaHandler } = require('@aws-lambda-powertools/tracer');
-const { Metrics, MetricUnits, logMetrics } = require('@aws-lambda-powertools/metrics');logMetrics } = require('@aws-lambda-powertools/metrics');
+const { Metrics, MetricUnits, logMetrics } = require('@aws-lambda-powertools/metrics');
 const { deleteLicence } = require('./helper/licence');
 const LicenceNotFoundError = require('./lib/LicenceNotFoundError');
 const middy = require('@middy/core')
