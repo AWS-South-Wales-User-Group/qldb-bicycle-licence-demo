@@ -3,7 +3,7 @@
  */
 const { Logger, injectLambdaContext } = require('@aws-lambda-powertools/logger');
 const { Tracer, captureLambdaHandler } = require('@aws-lambda-powertools/tracer');
-const { Metrics, logMetrics } = require('@aws-lambda-powertools/metrics');
+const { Metrics, MetricUnits, logMetrics } = require('@aws-lambda-powertools/metrics');logMetrics } = require('@aws-lambda-powertools/metrics');
 const date = require('date-and-time');
 const { updateLicence } = require('./helper/licence');
 const middy = require('@middy/core')
