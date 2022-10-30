@@ -23,7 +23,7 @@ export default function Licence(props) {
       });
   }
 
-  function field(key, label, value) {
+  function field(key, label, value) { 
     return (
       <Form.Group as={Row} controlId={key}>
         <Form.Label column sm='2'>
