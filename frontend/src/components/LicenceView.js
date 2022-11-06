@@ -31,7 +31,6 @@ export default function LicenceView(props) {
     const apiName = "ApiGatewayRestApi";
     const path = `/licences/${licenceId}`;
     if (licenceId !== '') {
-      console.log(`licence id: ${licenceId}`)
       setLoading(true);
       API.get(apiName, path)
         .then((response) => {

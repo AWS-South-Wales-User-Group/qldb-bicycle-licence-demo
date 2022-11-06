@@ -6,7 +6,26 @@ import { createRoot } from 'react-dom/client';
 
 import { BrowserRouter as Router } from "react-router-dom";
 
-
+Amplify.configure({
+  Auth: {
+    region: "eu-west-2",
+    userPoolId: "eu-west-2_nEdUy5YLN",
+    userPoolWebClientId: "35hom3mtegpkbnd685psghh9ar"
+  },
+  API: {
+    endpoints: [
+      {
+        endpoint:
+          "https://hsht6yunic.execute-api.eu-west-2.amazonaws.com/test",
+        name: "ApiGatewayRestApi",
+        region: "eu-west-2",
+        custom_header: async () => {
+          return { Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}` }
+        }
+      },
+    ],
+  }
+});
 
 const container = document.getElementById('root');
 const root = createRoot(container); // createRoot(container!) if you use TypeScript

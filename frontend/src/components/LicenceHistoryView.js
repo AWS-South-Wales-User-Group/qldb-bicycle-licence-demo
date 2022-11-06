@@ -5,7 +5,7 @@ import { Alert, Collection, Divider, View, Card, Flex, Heading, Text, Loader, us
 export default function LicenceHistoryView(props) {
   const { licenceId } = props;
   const { tokens } = useTheme();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [found, setFound] = useState(false);
   const [items, setItems] = useState({});
 
