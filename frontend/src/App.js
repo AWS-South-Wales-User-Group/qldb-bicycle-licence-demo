@@ -1,19 +1,12 @@
 import React from "react";
-import DriverHistoryView from "./components/LicenceHistoryView.js";
-import DriverView from "./components/LicenceView.js";
-
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Authenticator, Flex, Menu, useTheme, Image, MenuItem, View, Grid, Card, Tabs, TabItem, SearchField, Button } from '@aws-amplify/ui-react';
+import { Authenticator, Flex, Menu, useTheme, Image, MenuItem, View, Grid, Card } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import {
   BrowserRouter as Router,
   Switch,
-  Route,
-  Link
+  Route
 } from "react-router-dom";
-import { useState } from 'react';
-import ContactView from "./components/ContactView.js";
-import EndorsementView from "./components/EndorsementView.js";
 import NewLicenceView from "./components/NewLicenceView.js";
 import ExistingLicenceView from "./components/ExistingLicenceView.js";
 

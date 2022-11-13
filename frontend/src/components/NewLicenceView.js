@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import API from "@aws-amplify/api";
-import { Alert, View, Card, Flex, Text, TextField, Button, useTheme, Heading } from '@aws-amplify/ui-react';
+import { Alert, View, Flex, TextField, Button, useTheme, Heading } from '@aws-amplify/ui-react';
 import {
   useFormik,
 } from 'formik';
 
 import { faker } from '@faker-js/faker';
 
-export default () => {
+export default function NewLicenceView() {
 
   const { tokens } = useTheme();
   const [licenceId, setLicenceId] = useState('');

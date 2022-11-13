@@ -5,13 +5,11 @@ import LicenceView from './LicenceView';
 import ContactView from "./ContactView";
 import EndorsementView from "./EndorsementView";
 import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
   Link
 } from "react-router-dom";
 export default function ExistingLicenceView() {
   const [index, setIndex] = useState(0);
+  // const [licenceId, setLicenceId] = useState('3Lb56lr4QzaFKYaoJgOa97');
   const [licenceId, setLicenceId] = useState('');
 
   return (
