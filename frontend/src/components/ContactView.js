@@ -151,7 +151,8 @@ export default function ContactView(props) {
                 title={
                   <CustomTitle
                     courseNumber={`version ${item.metadata.version}`}
-                    courseName={`${item.data ? item.data.events.eventName : "redacted? or deleted?"}`}
+                    courseName={`${item.data === undefined ? item.dataHash === undefined ? 'LicenceDeleted' : 'Document Revision Redacted' : item.data.events.eventName}`}
+//                    courseName={`${item.data ? item.data.events.eventName : "redacted? or deleted?"}`}
                   />
                 }
                 value={`${i}`}
