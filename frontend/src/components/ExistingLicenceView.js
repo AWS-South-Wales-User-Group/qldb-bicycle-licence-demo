@@ -16,9 +16,9 @@ export default function ExistingLicenceView() {
     <Card>
       <Flex direction="row" justifyContent="space-between">
         <SearchField width="25rem" label="Search" placeholder="Search using a Licence ID here..." onSubmit={(search) => setLicenceId(search)} />
-        <Link to="/new">
+        {/* <Link to="/new">
           <Button>register new licence</Button>
-        </Link>
+        </Link> */}
       </Flex>
       <Tabs currentIndex={index} onChange={(i) => setIndex(i)}>
         <TabItem title="Licence"><LicenceView licenceId={licenceId} /></TabItem>

@@ -3,8 +3,8 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Amplify, Auth } from 'aws-amplify';
 import { createRoot } from 'react-dom/client';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { BrowserRouter as Router } from "react-router-dom";
 
 Amplify.configure({
   Auth: {
@@ -30,9 +30,7 @@ Amplify.configure({
 const container = document.getElementById('root');
 const root = createRoot(container); // createRoot(container!) if you use TypeScript
 root.render(
-  <Router>
     <App />
-  </Router>
 );
 
 // If you want to start measuring performance in your app, pass a function

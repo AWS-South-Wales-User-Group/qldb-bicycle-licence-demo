@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from 'react-router-dom';
+
 import API from "@aws-amplify/api";
 import { Alert, View, Card, Flex, Text, Loader, Button, useTheme } from '@aws-amplify/ui-react';
 
 export default function LicenceView(props) {
-  const { licenceId } = props;
+  const { licenceId } = useParams();
+
   const { tokens } = useTheme();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
