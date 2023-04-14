@@ -4,7 +4,7 @@
 const { Logger, injectLambdaContext } = require('@aws-lambda-powertools/logger');
 const { Tracer, captureLambdaHandler } = require('@aws-lambda-powertools/tracer');
 const { Metrics, MetricUnits, logMetrics } = require('@aws-lambda-powertools/metrics');
-const { getLicence } = require('./helper/licence');
+const { getContact } = require('./helper/licence');
 const LicenceNotFoundError = require('./lib/LicenceNotFoundError');
 const middy = require('@middy/core')
 const cors = require('@middy/http-cors')
@@ -20,11 +20,11 @@ const handler = async (event) => {
   const { licenceid } = event.pathParameters;
   const userId = 1234;
 //  const userId = event.requestContext.authorizer.claims.sub;
-  logger.debug(`In the get-licence handler with licenceid ${licenceid} and userId ${userId}`);
+  logger.debug(`In the get-contact handler with licenceid ${licenceid} and userId ${userId}`);
 
   try {
-    const response = await getLicence(licenceid, userId);
-    metrics.addMetric('getLicenceSucceeded', MetricUnits.Count, 1);
+    const response = await getContact(licenceid, userId);
+    metrics.addMetric('getContactSucceeded', MetricUnits.Count, 1);
     const licence = JSON.parse(response);
     return {
       statusCode: 200,
@@ -34,7 +34,7 @@ const handler = async (event) => {
     if (error instanceof LicenceNotFoundError) {
       return error.getHttpResponse();
     }
-    metrics.addMetric('getLicenceFailed', MetricUnits.Count, 1);
+    metrics.addMetric('getContactFailed', MetricUnits.Count, 1);
     Log.error(`Error returned: ${error}`);
     const errorBody = {
       status: 500,

@@ -20,14 +20,15 @@ tracer.captureAWS(require('aws-sdk'));
 
 const handler = async (event) => {
   const {
-    licenceId, street, county, postcode
+    licenceId, mobile
   } = JSON.parse(event.body);
-  const userId = event.requestContext.authorizer.claims.sub;
-  const eventInfo = { eventName: 'ContactAddressUpdated', eventDate: date.format(new Date(), 'YYYY/MM/DD HH:mm:ss') };
-  logger.debug(`In the update contact handler with: licenceId ${licenceId} street ${street} county ${county} and postcode ${postcode}`);
+  const userId = 1234;
+//  const userId = event.requestContext.authorizer.claims.sub;
+  const eventInfo = { eventName: 'ContactUpdated', eventDate: date.format(new Date(), 'YYYY/MM/DD HH:mm:ss') };
+  logger.debug(`In the update contact handler with: licenceId ${licenceId} and mobile ${mobile}`);
 
   try {
-    const response = await updateContact(licenceId, street, county, postcode, userId, eventInfo);
+    const response = await updateContact(logger, licenceId, mobile, userId, eventInfo);
     metrics.addMetric('updateContactSucceeded', MetricUnits.Count, 1);
     return {
       statusCode: 201,

@@ -1,10 +1,10 @@
 /*
- * Lambda function that implements the get licence functionality
+ * Lambda function that implements the delete licence functionality
  */
 const { Logger, injectLambdaContext } = require('@aws-lambda-powertools/logger');
 const { Tracer, captureLambdaHandler } = require('@aws-lambda-powertools/tracer');
 const { Metrics, MetricUnits, logMetrics } = require('@aws-lambda-powertools/metrics');
-const { getLicence } = require('./helper/licence');
+const { deleteEndorsement } = require('./helper/licence');
 const LicenceNotFoundError = require('./lib/LicenceNotFoundError');
 const middy = require('@middy/core')
 const cors = require('@middy/http-cors')
@@ -17,25 +17,23 @@ const metrics = new Metrics();
 tracer.captureAWS(require('aws-sdk'));
 
 const handler = async (event) => {
-  const { licenceid } = event.pathParameters;
-  const userId = 1234;
-//  const userId = event.requestContext.authorizer.claims.sub;
-  logger.debug(`In the get-licence handler with licenceid ${licenceid} and userId ${userId}`);
+  const { endorsementId, licenceId } = JSON.parse(event.body);
+  logger.debug(`In the delete endorsement handler for endorsementId ${endorsementId} and licenceId ${licenceId}`);
 
   try {
-    const response = await getLicence(licenceid, userId);
-    metrics.addMetric('getLicenceSucceeded', MetricUnits.Count, 1);
-    const licence = JSON.parse(response);
+    const response = await deleteEndorsement(logger, endorsementId, licenceId);
+    metrics.addMetric('deleteEndorsementSucceeded', MetricUnits.Count, 1);
+    const message = JSON.parse(response);
     return {
-      statusCode: 200,
-      body: JSON.stringify(licence),
+      statusCode: 201,
+      body: JSON.stringify(message),
     };
   } catch (error) {
     if (error instanceof LicenceNotFoundError) {
       return error.getHttpResponse();
     }
-    metrics.addMetric('getLicenceFailed', MetricUnits.Count, 1);
-    Log.error(`Error returned: ${error}`);
+    metrics.addMetric('deleteEndorsementFailed', MetricUnits.Count, 1);
+    logger.error(`Error returned: ${error}`);
     const errorBody = {
       status: 500,
       title: error.name,

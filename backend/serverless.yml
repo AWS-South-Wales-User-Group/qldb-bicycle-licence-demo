@@ -7,20 +7,21 @@ provider:
   runtime: nodejs16.x
   memorySize: 512
   stage: ${opt:stage, 'dev'}
-  region: eu-west-1
+  region: eu-west-2
+  stackName: ${self:service}-${self:provider.stage}
   logRetentionInDays: 7 # Set the default RetentionInDays for a CloudWatch LogGroup
   tracing:
     lambda: true # Optional, can be true (true equals 'Active'), 'Active' or 'PassThrough'
   apiGateway:
-    restApiId: !ImportValue QldbApiGatewayDemo-restApiId
-    restApiRootResourceId: !ImportValue QldbApiGatewayDemo-rootResourceId
+    restApiId: !ImportValue QldbApiGatewayDemo-restApiId-${self:provider.stage}
+    restApiRootResourceId: !ImportValue QldbApiGatewayDemo-rootResourceId-${self:provider.stage}
   environment:
-    LOG_LEVEL: INFO
-    POWERTOOLS_LOGGER_SAMPLE_RATE: 0.2
+    LOG_LEVEL: DEBUG
+    POWERTOOLS_LOGGER_SAMPLE_RATE: 1.0
     POWERTOOLS_METRICS_NAMESPACE: qldb-bicycle-licence
     AWS_NODEJS_CONNECTION_REUSE_ENABLED	: "1"
-    LEDGER_NAME: 
-      Ref: qldbLedger
+    LEDGER_NAME: ${self:custom.ledgerName}
+#      Ref: qldbLedger
   iam:
     role:
       statements:
@@ -28,13 +29,16 @@ provider:
           Action: 
             - qldb:SendCommand
           Resource: 
-            - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/qldb-bicycle-licence-${self:provider.stage}'
+            - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}'
 
         - Effect: "Allow"
           Action:
             - "xray:PutTraceSegments"
             - "xray:PutTelemetryRecords"
           Resource: "*" # Restrict resource to minimum required
+
+custom: 
+  ledgerName: demoRedactionLedger
 
 plugins:
   - serverless-iam-roles-per-function
@@ -55,21 +59,21 @@ functions:
           - qldb:PartiQLSelect
           - qldb:PartiQLUpdate
         Resource: 
-          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/qldb-bicycle-licence-${self:provider.stage}/table/*'
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/table/*'
     events:
       - http:
           path: /licences
           method: post
           cors: true
-          authorizer:
-            type: COGNITO_USER_POOLS
-            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
+#          authorizer:
+ #           type: COGNITO_USER_POOLS
+  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
-  updateLicence:
-    name: update-bicycle-licence-${self:provider.stage}
-    handler: functions/update-licence.handler
+  updateLicenceAddress:
+    name: update-licence-address-${self:provider.stage}
+    handler: functions/update-licence-address.handler
     environment:
-      POWERTOOLS_SERVICE_NAME: qldb-updateLicence
+      POWERTOOLS_SERVICE_NAME: qldb-updateLicenceAddress
     iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow       
@@ -77,16 +81,38 @@ functions:
           - qldb:PartiQLSelect
           - qldb:PartiQLUpdate
         Resource: 
-          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/qldb-bicycle-licence-${self:provider.stage}/table/*'
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/table/*'
     events:
       - http:
-          path: /licences
+          path: /licences/address
           method: put
           cors: true
-          authorizer:
-            type: COGNITO_USER_POOLS
-            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
+#          authorizer:
+ #           type: COGNITO_USER_POOLS
+  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
   
+  updateLicenceStatus:
+    name: update-licence-status-${self:provider.stage}
+    handler: functions/update-licence-status.handler
+    environment:
+      POWERTOOLS_SERVICE_NAME: qldb-updateLicenceStatus
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow       
+        Action: 
+          - qldb:PartiQLSelect
+          - qldb:PartiQLUpdate
+        Resource: 
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/table/*'
+    events:
+      - http:
+          path: /licences/status
+          method: put
+          cors: true
+#          authorizer:
+ #           type: COGNITO_USER_POOLS
+  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+
   updateContact:
     name: update-bicycle-contact-${self:provider.stage}
     handler: functions/update-contact.handler
@@ -98,16 +124,41 @@ functions:
         Action: 
           - qldb:PartiQLSelect
           - qldb:PartiQLUpdate
+          - qldb:PartiQLRedact
         Resource: 
-          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/qldb-bicycle-licence-${self:provider.stage}/table/*'
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/table/*'
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/information_schema/user_tables'
     events:
       - http:
           path: /licences/contact
           method: put
           cors: true
-          authorizer:
-            type: COGNITO_USER_POOLS
-            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
+#          authorizer:
+ #           type: COGNITO_USER_POOLS
+  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+
+  addEndorsement:
+    name: add-endorsement-${self:provider.stage}
+    handler: functions/add-endorsement.handler
+    environment:
+      POWERTOOLS_SERVICE_NAME: qldb-addEndorsement
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow       
+        Action: 
+          - qldb:PartiQLSelect
+          - qldb:PartiQLInsert
+          - qldb:PartiQLUpdate
+        Resource: 
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/table/*'
+    events:
+      - http:
+          path: /licences/endorsement
+          method: post
+          cors: true
+#          authorizer:
+ #           type: COGNITO_USER_POOLS
+  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
   getLicence:
     name: get-bicycle-licence-${self:provider.stage}
@@ -120,15 +171,36 @@ functions:
         Action: 
           - qldb:PartiQLSelect
         Resource: 
-          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/qldb-bicycle-licence-${self:provider.stage}/table/*'
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/table/*'
     events:
       - http:
           path: /licences/{licenceid}
           method: get
           cors: true
-          authorizer:
-            type: COGNITO_USER_POOLS
-            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
+#          authorizer:
+ #           type: COGNITO_USER_POOLS
+  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+
+  getContact:
+    name: get-contact-${self:provider.stage}
+    handler: functions/get-contact.handler
+    environment:
+      POWERTOOLS_SERVICE_NAME: qldb-getContact
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow       
+        Action: 
+          - qldb:PartiQLSelect
+        Resource: 
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/table/*'
+    events:
+      - http:
+          path: /licences/{licenceid}/contact
+          method: get
+          cors: true
+#          authorizer:
+ #           type: COGNITO_USER_POOLS
+  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
   getLicenceHistory:
     name: get-bicycle-licence-history-${self:provider.stage}
@@ -141,15 +213,81 @@ functions:
         Action: 
           - qldb:PartiQLHistoryFunction
         Resource: 
-          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/qldb-bicycle-licence-${self:provider.stage}/table/*'
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/table/*'
     events:
       - http:
-          path: /licences/history/{licenceid}
+          path: /licences/{licenceid}/history
           method: get
           cors: true
-          authorizer:
-            type: COGNITO_USER_POOLS
-            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
+#          authorizer:
+ #           type: COGNITO_USER_POOLS
+  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+
+  getContactHistory:
+    name: get-contact-history-${self:provider.stage}
+    handler: functions/get-contact-history.handler
+    environment:
+      POWERTOOLS_SERVICE_NAME: qldb-getContactHistory
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow       
+        Action: 
+          - qldb:PartiQLSelect
+          - qldb:PartiQLHistoryFunction
+        Resource: 
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/table/*'
+    events:
+      - http:
+          path: /licences/{licenceid}/contact/history
+          method: get
+          cors: true
+#          authorizer:
+ #           type: COGNITO_USER_POOLS
+  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+
+  getEndorsement:
+    name: get-endorsement-${self:provider.stage}
+    handler: functions/get-endorsement.handler
+    environment:
+      POWERTOOLS_SERVICE_NAME: qldb-getEndorsement
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow       
+        Action: 
+          - qldb:PartiQLSelect
+        Resource: 
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/table/*'
+    events:
+      - http:
+          path: /licences/{licenceid}/endorsements
+          method: get
+          cors: true
+#          authorizer:
+ #           type: COGNITO_USER_POOLS
+  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+
+
+  getEndorsementHistory:
+    name: get-endorsement-history-${self:provider.stage}
+    handler: functions/get-endorsement-history.handler
+    environment:
+      POWERTOOLS_SERVICE_NAME: qldb-getEndorsementHistory
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow       
+        Action: 
+          - qldb:PartiQLSelect
+          - qldb:PartiQLHistoryFunction
+        Resource: 
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/table/*'
+    events:
+      - http:
+          path: /licences/{licenceid}/endorsements/history
+          method: get
+          cors: true
+#          authorizer:
+ #           type: COGNITO_USER_POOLS
+  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
   deleteLicence:
     name: delete-bicycle-licence-${self:provider.stage}
@@ -163,16 +301,89 @@ functions:
           - qldb:PartiQLSelect
           - qldb:PartiQLDelete
         Resource: 
-          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/qldb-bicycle-licence-${self:provider.stage}/table/*'
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/table/*'
     events:
       - http:
           path: /licences
           method: delete
           cors: true
-          authorizer:
-            type: COGNITO_USER_POOLS
-            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId
-            
+#          authorizer:
+ #           type: COGNITO_USER_POOLS
+  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+
+  redactLicence:
+    name: redact-licence-${self:provider.stage}
+    handler: functions/redact-licence.handler
+    environment:
+      POWERTOOLS_SERVICE_NAME: qldb-redactLicence
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow       
+        Action: 
+          - qldb:PartiQLSelect
+          - qldb:PartiQLDelete
+          - qldb:PartiQLHistoryFunction
+          - qldb:PartiQLRedact
+        Resource: 
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/table/*'
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/information_schema/user_tables'   
+    events:
+      - http:
+          path: /licences/redact
+          method: post
+          cors: true
+#          authorizer:
+ #           type: COGNITO_USER_POOLS
+  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+
+  redactLicenceRevision:
+    name: redact-licence-revision-${self:provider.stage}
+    handler: functions/redact-licence-revision.handler
+    environment:
+      POWERTOOLS_SERVICE_NAME: qldb-redactLicenceRevision
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow       
+        Action: 
+          - qldb:PartiQLSelect
+          - qldb:PartiQLDelete
+          - qldb:PartiQLHistoryFunction
+          - qldb:PartiQLRedact
+        Resource: 
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/table/*'
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/information_schema/user_tables'   
+    events:
+      - http:
+          path: /licences/revision/redact
+          method: post
+          cors: true
+#          authorizer:
+ #           type: COGNITO_USER_POOLS
+  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+
+
+  deleteEndorsement:
+    name: delete-endorsement-${self:provider.stage}
+    handler: functions/delete-endorsement.handler
+    environment:
+      POWERTOOLS_SERVICE_NAME: qldb-deleteEndorsement
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow       
+        Action: 
+          - qldb:PartiQLSelect
+          - qldb:PartiQLDelete
+        Resource: 
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/table/*'
+    events:
+      - http:
+          path: /licences/endorsement
+          method: delete
+          cors: true
+#          authorizer:
+ #           type: COGNITO_USER_POOLS
+  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+
   createQldbDemoTable:
     name: qldb-licence-table-${self:provider.stage}
     handler: functions/createQldbTable.handler
@@ -182,11 +393,14 @@ functions:
         Action: 
           - qldb:PartiQLCreateTable
         Resource: 
-          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/qldb-bicycle-licence-${self:provider.stage}/*'
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/*'
     memorySize: 256
     timeout: 6
     environment:
-      LICENCE_TABLE_NAME: BicycleLicence
+      LICENCE_TABLE: Licence
+      CONTACT_TABLE: Contact
+      ENDORSEMENT_TABLE: Endorsement
+      MAPPING_TABLE: Mapping
 
   createQldbDemoIndex:
     name: qldb-licence-index-${self:provider.stage}
@@ -197,52 +411,57 @@ functions:
         Action: 
           - qldb:PartiQLCreateIndex
         Resource: 
-          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/qldb-bicycle-licence-${self:provider.stage}/*'
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/*'
     memorySize: 256
     timeout: 6
     environment:
-      TABLE_NAME: BicycleLicence
-      INDEX_NAME_1: licenceId
-      INDEX_NAME_2: email
-      INDEX_NAME_3: userId
-
+      LICENCE_TABLE: Licence
+      LICENCE_INDEX_1: licenceId
+      CONTACT_TABLE: Contact
+      CONTACT_INDEX_1: licenceId
+      CONTACT_INDEX_2: email
+      ENDORSEMENT_TABLE: Endorsement
+      ENDORSEMENT_INDEX_1: licenceId
+      ENDORSEMENT_INDEX_2: endorsementId
+      MAPPING_TABLE: Mapping
+      MAPPING_INDEX_1: licenceId
 
 resources:
-  Resources:
-    qldbLedger:
-      Type: AWS::QLDB::Ledger
-      Properties:
-        Name: qldb-bicycle-licence-${self:provider.stage}
-        DeletionProtection: false
-        PermissionsMode: STANDARD
-        Tags:
-          - 
-            Key: name
-            Value: qldb-bicycle-licence-demo
+#  Resources:
+#    qldbLedger:
+ #     Type: AWS::QLDB::Ledger
+  #    Properties:
+   #     Name: qldb-bicycle-licence-${self:provider.stage}
+    #    DeletionProtection: false
+     #   PermissionsMode: STANDARD
+      #  Tags:
+       #   - 
+        #    Key: name
+         #   Value: qldb-bicycle-licence-demo
 
-    qldbTable:
-      Type: Custom::qldbTable
-      DependsOn: qldbLedger
-      Properties:
-        ServiceToken: !GetAtt CreateQldbDemoTableLambdaFunction.Arn
-        Version: 1.1  #change this to force redeploy
+#    qldbTable:
+ #     Type: Custom::qldbTable
+  #    DependsOn: qldbLedger
+   #   Properties:
+    #    ServiceToken: !GetAtt CreateQldbDemoTableLambdaFunction.Arn
+     #   Version: 1.1  #change this to force redeploy
 
-    qldbIndex:
-      Type: Custom::qldbIndexes
-      DependsOn: qldbTable
-      Properties:
-        ServiceToken: !GetAtt CreateQldbDemoIndexLambdaFunction.Arn
-        Version: 1.1  #change this to force redeploy 
+#    qldbIndex:
+ #     Type: Custom::qldbIndexes
+  #    DependsOn: qldbTable
+   #   Properties:
+    #    ServiceToken: !GetAtt CreateQldbDemoIndexLambdaFunction.Arn
+     #   Version: 1.1  #change this to force redeploy 
   
   Outputs:
 
     qldbBicycleLicenceLedger:
-      Value:
-        Ref: qldbLedger
+      Value: ${self:custom.ledgerName}
+#        Ref: qldbLedger
       Export:
-        Name: qldb-bicycle-licence-demo
+        Name: qldb-bicycle-licence-${self:provider.stage}
 
     qldbBicycleLicenceStage:
       Value: ${self:provider.stage}
       Export:
-        Name: qldb-bicycle-licence-stage
+        Name: qldb-bicycle-licence-stage-${self:provider.stage}

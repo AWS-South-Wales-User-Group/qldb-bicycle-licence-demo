@@ -4,8 +4,9 @@
 const { Logger, injectLambdaContext } = require('@aws-lambda-powertools/logger');
 const { Tracer, captureLambdaHandler } = require('@aws-lambda-powertools/tracer');
 const { Metrics, MetricUnits, logMetrics } = require('@aws-lambda-powertools/metrics');
+const date = require('date-and-time');
 const middy = require('@middy/core');
-const { createContactAndLicence } = require('./helper/licence');
+const { addEndorsement } = require('./helper/licence');
 const LicenceIntegrityError = require('./lib/LicenceIntegrityError');
 const cors = require('@middy/http-cors')
 
@@ -18,18 +19,19 @@ tracer.captureAWS(require('aws-sdk'));
 
 const handler = async (event) => {
   const {
-    firstName, lastName, email, street, county, postcode, mobile
+    licenceId, points, issueDtm, expiryDtm
   } = JSON.parse(event.body);
 //  const userId = event.requestContext.authorizer.claims.sub;
   const userId = 1234;
+  const eventInfo = { eventName: 'EndorsementAdded', eventDate: date.format(new Date(), 'YYYY/MM/DD HH:mm:ss') };
 
-  logger.debug(`In the create licence handler with: first name ${firstName} last name ${lastName} email ${email} street ${street} county ${county} postcode ${postcode} mobile ${mobile} userId ${userId}`);
+  logger.debug(`In the add endorsement handler with: licenceId ${licenceId} points ${points} issueDtm ${issueDtm} and expiryDtm ${expiryDtm}`);
 
   try {
-    const response = await createContactAndLicence(
-      logger, firstName, lastName, email, street, county, postcode, mobile, userId
+    const response = await addEndorsement(
+      logger, licenceId, points, issueDtm, expiryDtm, eventInfo, userId
     );
-    metrics.addMetric('createLicenceSucceeded', MetricUnits.Count, 1);
+    metrics.addMetric('addEndorsementSucceeded', MetricUnits.Count, 1);
     return {
       statusCode: 201,
       body: JSON.stringify(response),
@@ -38,7 +40,7 @@ const handler = async (event) => {
     if (error instanceof LicenceIntegrityError) {
       return error.getHttpResponse();
     }
-    metrics.addMetric('createLicenceFailed', MetricUnits.Count, 1);
+    metrics.addMetric('addEndorsementFailed', MetricUnits.Count, 1);
     logger.error(`Error returned: ${error}`);
     const errorBody = {
       status: 500,

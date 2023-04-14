@@ -33,7 +33,12 @@ const handler = async (event, context) => {
       logger.debug('Attempting to create QLDB table');
       try {
         await qldbDriver.executeLambda(async (txn) => {
-          await createTable(txn, process.env.LICENCE_TABLE_NAME);
+          Promise.all([
+            createTable(txn, process.env.LICENCE_TABLE),
+            createTable(txn, process.env.CONTACT_TABLE),
+            createTable(txn, process.env.ENDORSEMENT_TABLE),
+            createTable(txn, process.env.MAPPING_TABLE)
+          ]);
         });
       } catch (e) {
         logger.error(`Unable to connect: ${e}`);

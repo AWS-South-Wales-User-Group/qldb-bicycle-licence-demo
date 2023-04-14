@@ -10,8 +10,8 @@ import { BrowserRouter as Router } from "react-router-dom";
 Auth.configure({
   Auth: {
     region: "eu-west-1",
-    userPoolId: "eu-west-1_BUp2u0M3n",
-    userPoolWebClientId: "4b140lbco927kehmq1b5740cbv"
+    userPoolId: "eu-west-1_dIM6BWj5s",
+    userPoolWebClientId: "2kkp6bj6lcaa87nek45gk0i3g"
   },
 });
 
