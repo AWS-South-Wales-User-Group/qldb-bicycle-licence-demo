@@ -59,7 +59,7 @@ export default function NewLicenceView() {
     <Container>
       <Row>
         <Col>
-          <h1 class="display-6">Register</h1>
+          <h1 className="display-6">Register</h1>
         </Col>
       </Row>
       <Row><Col>
@@ -91,7 +91,7 @@ export default function NewLicenceView() {
                 <Row className="p-2">
 
                   <Col>
-                    <p class="h5">Contact</p>
+                    <p className="h5">Contact</p>
                   </Col>
                 </Row>
                 <Row className="p-2">
@@ -137,7 +137,7 @@ export default function NewLicenceView() {
                 </Row>
                 <Row className="p-2 pt-5">
                   <Col>
-                    <p class="h5">Address</p>
+                    <p className="h5">Address</p>
                   </Col>
                 </Row>
 
