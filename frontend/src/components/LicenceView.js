@@ -16,3 +16,4 @@ export default function LicenceView(props) {
     </>
   );
 }
+  

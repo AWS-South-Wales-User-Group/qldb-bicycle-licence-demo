@@ -22,24 +22,17 @@ export default function LicenceHistoryView(props) {
     );
   }
 
-
   const redact = (event, version) => {
     event.preventDefault()
     const apiName = "ApiGatewayRestApi";
     const path = `/licences/revision/redact`;
     API.post(apiName, path, { body: { licenceId, version } })
-      .then((response) => {
-
-        console.log(response);
-
-        setItems(response);
-
+      .then(() => {
+        getLicenceHistory();
       })
   }
 
-
-
-  useEffect(() => {
+  const getLicenceHistory = () => {
     const apiName = "ApiGatewayRestApi";
     const path = `/licences/${licenceId}/history`;
     if (licenceId !== '') {
@@ -51,6 +44,10 @@ export default function LicenceHistoryView(props) {
           console.log(error);
         });
     }
+  }
+
+  useEffect(() => {
+    getLicenceHistory();
   }, [licenceId]);
 
   return (
@@ -64,15 +61,15 @@ export default function LicenceHistoryView(props) {
           }
           {/* <Accordion.Header>{item.metadata.version} - {item.data.events.eventName} - {item.data.events.eventDate}</Accordion.Header> */}
 
-            <Accordion.Body>
-              <Flex direction="column" alignItems="flex-start">
-                <Divider />
-                {item.data && <> field("street", "Street", item.data.street) {field("county", "County", item.data.county)} {field("postcode", "Postcode", item.data.postcode)}</>}
+          <Accordion.Body>
+            <Flex direction="column" alignItems="flex-start">
+              <Divider />
+              {item.data && <> field("street", "Street", item.data.street) {field("county", "County", item.data.county)} {field("postcode", "Postcode", item.data.postcode)}</>}
 
-                {item.data ? <Button variant="secondary" onClick={(event) => redact(event,  item.metadata.version)}>Redact</Button> : 'redacted'}
-                {JSON.stringify(item)}
-              </Flex>
-            </Accordion.Body>
+              {item.data ? <Button variant="secondary" onClick={(event) => redact(event, item.metadata.version)}>Redact</Button> : 'redacted'}
+              {/* {JSON.stringify(item)} */}
+            </Flex>
+          </Accordion.Body>
 
         </Accordion.Item>))}
 
