@@ -15,17 +15,6 @@ export default function ContactHistory(props) {
   const [items, setItems] = useState([]);
 
 
-
-  const redact = (event, version) => {
-    event.preventDefault()
-    const apiName = "ApiGatewayRestApi";
-    const path = `/licences/revision/redact`;
-    API.post(apiName, path, { body: { licenceId, version } })
-      .then(() => {
-        getContactHistory(licenceId);
-      })
-  }
-
   const getContactHistory = (licenceId) => {
     const apiName = "ApiGatewayRestApi";
     const path = `/licences/${licenceId}/contact/history`;
@@ -66,7 +55,6 @@ export default function ContactHistory(props) {
                   <Stack>
                     {item.data && <p>email: <strong>{item.data.email}</strong></p>}
                     {item.data && <p>mobile: <strong>{item.data.mobile}</strong></p>}
-                    {item.data ? <Button variant="secondary" onClick={(event) => redact(event, item.metadata.version)}>Redact</Button> : 'redacted'}
                   </Stack>
                 </Accordion.Body>
 
