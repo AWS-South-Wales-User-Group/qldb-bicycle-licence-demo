@@ -1,30 +1,16 @@
 import React, { useEffect, useState } from "react";
 import API from "@aws-amplify/api";
-import { View, Flex, Text, useTheme } from '@aws-amplify/ui-react';
 import Accordion from 'react-bootstrap/Accordion';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
+import Stack from 'react-bootstrap/Stack';
 
 
 export default function LicenceHistory(props) {
   const { licenceId, trigger } = props;
-  const { tokens } = useTheme();
   const [items, setItems] = useState([]);
-
-  const field = (key, label, value) => {
-    return (
-      <View>
-        <Flex direction="row" alignItems="flex-start" gap={tokens.space.xs}>
-          <Text variation="tertiary" >{label}:</Text>
-          <Text variation="primary">
-            {value}
-          </Text>
-        </Flex>
-      </View>
-    );
-  }
 
   const redact = (event, version) => {
     event.preventDefault()
@@ -73,11 +59,18 @@ export default function LicenceHistory(props) {
           {/* <Accordion.Header>{item.metadata.version} - {item.data.events.eventName} - {item.data.events.eventDate}</Accordion.Header> */}
 
           <Accordion.Body>
-            <Flex direction="column" alignItems="flex-start">
-              {item.data && <> {field("street", "Street", item.data.street)} {field("county", "County", item.data.county)} {field("postcode", "Postcode", item.data.postcode)}</>}
-              {item.data ? <Button variant="secondary" onClick={(event) => redact(event, item.metadata.version)}>Redact</Button> : 'redacted'}
-              {/* {JSON.stringify(item)} */}
-            </Flex>
+
+          <Stack>
+                    {item.data && <p>firstName: <strong>{item.data.firstName}</strong></p>}
+                    {item.data && <p>lastName: <strong>{item.data.lastName}</strong></p>}
+                    {item.data && <p>street: <strong>{item.data.street}</strong></p>}
+                    {item.data && <p>county: <strong>{item.data.county}</strong></p>}
+                    {item.data && <p>postcode: <strong>{item.data.postcode}</strong></p>}
+                    {item.data && <p>status: <strong>{item.data.status}</strong></p>}
+                    {item.data ? <Button variant="secondary" onClick={(event) => redact(event, item.metadata.version)}>Redact</Button> : 'redacted'}
+
+                  </Stack>
+ 
           </Accordion.Body>
 
         </Accordion.Item>))}

@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "@aws-amplify/api";
-import { View, Flex, Text, useTheme } from '@aws-amplify/ui-react';
 import Accordion from 'react-bootstrap/Accordion';
-import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -11,7 +9,6 @@ import Stack from 'react-bootstrap/Stack';
 
 export default function ContactHistory(props) {
   const { licenceId, trigger } = props;
-  const { tokens } = useTheme();
   const [items, setItems] = useState([]);
 
 
