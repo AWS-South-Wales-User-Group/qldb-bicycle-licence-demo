@@ -5,10 +5,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 
 import '@aws-amplify/ui-react/styles.css';
-
-
-// import NewLicenceView from "./components/NewLicenceView.js";
-import ExistingLicenceView from "./components/ExistingLicenceViewBootstrap.js";
+import Router from "./routes/Router.js";
 
 
 
@@ -52,7 +49,7 @@ function App() {
             </Container>
           </Navbar>
           <Container>
-              <ExistingLicenceView />
+              <Router />
           </Container>
 
         </Container>

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import API from "@aws-amplify/api";
-import { Button } from '@aws-amplify/ui-react';
 import { Formik } from 'formik';
 import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
@@ -8,11 +7,16 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Badge from 'react-bootstrap/Badge';
+import Button from 'react-bootstrap/Button';
+import { useParams } from 'react-router-dom';
+import LicenceHistory from "./LicenceHistory";
 
 
 export default function Licence(props) {
-  const { licenceId } = props;
-  const [formValues, setFormValues] = useState({ firstName: '', lastName: '', street: '' , county: '' , postcode: '' , status: ''  });
+  const { licenceId } = useParams();
+  const [formValues, setFormValues] = useState({ firstName: '', lastName: '', street: '', county: '', postcode: '', status: '' });
+  const [trigger, setTrigger] = useState(0);
+
   // const { values, setValues } = useFormikContext();
 
 
@@ -38,6 +42,8 @@ export default function Licence(props) {
           const path = `/licences/address`;
           values.licenceId = licenceId;
           await API.put(apiName, path, { body: values })
+          setTrigger((trigger) => trigger + 1);
+
         }}
       >
         {({ isSubmitting, handleChange, values, touched, errors, handleSubmit }) => (
@@ -121,6 +127,7 @@ export default function Licence(props) {
 
       </Formik>
 
+      <LicenceHistory licenceId={licenceId} trigger={trigger} />
 
 
     </>

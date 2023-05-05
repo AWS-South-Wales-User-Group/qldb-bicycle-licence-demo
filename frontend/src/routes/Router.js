@@ -5,11 +5,11 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-import LicenceView from './LicenceView';
-import LicenceHistoryView from './LicenceHistoryView';
-import NewLicenceView from './NewLicenceView';
+import Licence from '../components/Licence';
+import Contact from '../components/Contact';
+import NewLicenceView from '../components/NewLicenceView';
 
-import Root from "..//routes/root";
+import Root from "./Root";
 import ErrorPage from "../error-page";
 
 
@@ -25,18 +25,18 @@ const router = createBrowserRouter([
       },
       {
         path: "licence/:licenceId",
-        element: <LicenceView />,
+        element: <Licence />,
       },
       {
-        path: "licence/:licenceId/history",
-        element: <LicenceHistoryView />,
+        path: "licence/:licenceId/contact",
+        element: <Contact />,
       },
     ],
   },
 ]);
 
 
-export default function ExistingLicenceView() {
+export default function Router() {
   return (
     <>
       <Row>

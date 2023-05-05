@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from 'react-router-dom';
+
 import API from "@aws-amplify/api";
-import { Button } from '@aws-amplify/ui-react';
 import { Formik } from 'formik';
 
 import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
+import Button from 'react-bootstrap/Button';
+
 import Row from 'react-bootstrap/Row';
 
+import ContactHistory from "./ContactHistory";
 
-export default function ContactView(props) {
-  const { licenceId } = props;
+export default function Contact(props) {
+  const { licenceId } = useParams();
+
   const [formValues, setFormValues] = useState({ email: '', mobile: '' });
+  const [trigger, setTrigger] = useState(0);
 
 
   useEffect(() => {
@@ -37,6 +43,8 @@ export default function ContactView(props) {
           values.licenceId = licenceId;
           console.log(values)
           await API.put(apiName, path, { body: values })
+          setTrigger((trigger) => trigger + 1);
+
         }}
       >
         {({ isSubmitting, handleChange, values, touched, errors, handleSubmit }) => (
@@ -49,30 +57,30 @@ export default function ContactView(props) {
                   <Card.Subtitle className="mb-2 text-muted">does this have its own history?</Card.Subtitle>
 
                   {/* <Card.Text> */}
-                    <Form onSubmit={handleSubmit} >
+                  <Form onSubmit={handleSubmit} >
 
-                      <Form.Group className="mb-3" controlId="validationEmail">
-                        <Form.Label>email:</Form.Label>
-                        <Form.Control readOnly type="email" name="email"
-                          onChange={handleChange} value={values.email}
-                          isValid={touched.email && !errors.email}
-                        />
-                        <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
-                      </Form.Group>
+                    <Form.Group className="mb-3" controlId="validationEmail">
+                      <Form.Label>email:</Form.Label>
+                      <Form.Control readOnly type="email" name="email"
+                        onChange={handleChange} value={values.email}
+                        isValid={touched.email && !errors.email}
+                      />
+                      <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
+                    </Form.Group>
 
-                      <Form.Group className="mb-3" controlId="validationMobile">
-                        <Form.Label>mobile:</Form.Label>
-                        <Form.Control type="text" name="mobile"
-                          onChange={handleChange} value={values.mobile}
-                          isValid={touched.mobile && !errors.mobile}
-                        />
-                        <Form.Control.Feedback type="invalid">{errors.mobile}</Form.Control.Feedback>
-                      </Form.Group>
-                      <Button variant="primary" type="submit">
-                        update
-                      </Button>
-                    </Form>
-                    
+                    <Form.Group className="mb-3" controlId="validationMobile">
+                      <Form.Label>mobile:</Form.Label>
+                      <Form.Control type="text" name="mobile"
+                        onChange={handleChange} value={values.mobile}
+                        isValid={touched.mobile && !errors.mobile}
+                      />
+                      <Form.Control.Feedback type="invalid">{errors.mobile}</Form.Control.Feedback>
+                    </Form.Group>
+                    <Button variant="primary" type="submit">
+                      update
+                    </Button>
+                  </Form>
+
                   {/* </Card.Text> */}
                 </Card.Body>
               </Card>
@@ -85,6 +93,7 @@ export default function ContactView(props) {
 
 
       </Formik>
+      <ContactHistory licenceId={licenceId} trigger={trigger} />
 
 
 

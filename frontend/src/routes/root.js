@@ -6,7 +6,7 @@ import Button from "react-bootstrap/Button";
 
 import { SearchField } from '@aws-amplify/ui-react';
 import { Outlet, Link, NavLink, useNavigate, useParams } from "react-router-dom";
-import Col from "react-bootstrap/esm/Col";
+import Col from "react-bootstrap/Col";
 
 export default function Root() {
   const navigate = useNavigate();
@@ -40,9 +40,9 @@ export default function Root() {
             <Nav.Item>
               <Nav.Link as={NavLink} to={'licence/' + licenceId} end>Licence</Nav.Link>
             </Nav.Item>
-            {/* <Nav.Item>
-              <Nav.Link as={NavLink} to={'licence/' + licenceId + '/history'} end>History</Nav.Link>
-            </Nav.Item> */}
+            <Nav.Item>
+              <Nav.Link as={NavLink} to={'licence/' + licenceId + '/contact'} end>Contact</Nav.Link>
+            </Nav.Item>
           </Nav>
         </Row>
       }
