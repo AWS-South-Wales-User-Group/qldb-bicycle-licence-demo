@@ -413,7 +413,7 @@ const getLicence = async (licenceId, userId) => {
     const resultList = result.getResultList();
 
     if (resultList.length === 0) {
-      throw new LicenceNotFoundError(400, 'Licence Not Found Error', `Licence record with licenceId ${licenceId} does not exist`);
+      throw new LicenceNotFoundError(404, 'Endorsements Not Found Error', `No endorsements were found for record with licenceId ${licenceId}`);
     } else {
       licence = JSON.stringify(resultList);
     }
