@@ -17,7 +17,7 @@ import EndorsementHistory from "./EndorsementHistory";
 export default function Endorsement(props) {
   const { licenceId } = useParams();
 
-  const [formValues, setFormValues] = useState({ points: '', issueDtm: '', expiryDtm: '' });
+  const [formValues] = useState({ points: '', issueDtm: '', expiryDtm: '' });
   const [noEndorsements, setNoEndorsement] = useState({ title: '', detail: '', status: '' });
   const [endorsements, setEndorsement] = useState([]);
 
