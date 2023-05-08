@@ -11,6 +11,7 @@ import NewLicenceView from '../components/NewLicenceView';
 
 import Root from "./Root";
 import ErrorPage from "../error-page";
+import Endorsement from "../components/Endorsement";
 
 
 const router = createBrowserRouter([
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
       {
         path: "licence/:licenceId/contact",
         element: <Contact />,
+      },
+      {
+        path: "licence/:licenceId/endorsement",
+        element: <Endorsement />,
       },
     ],
   },

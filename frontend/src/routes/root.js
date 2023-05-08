@@ -43,6 +43,9 @@ export default function Root() {
             <Nav.Item>
               <Nav.Link as={NavLink} to={'licence/' + licenceId + '/contact'} end>Contact</Nav.Link>
             </Nav.Item>
+            <Nav.Item>
+              <Nav.Link as={NavLink} to={'licence/' + licenceId + '/endorsement'} end>Endorsement</Nav.Link>
+            </Nav.Item>
           </Nav>
         </Row>
       }
