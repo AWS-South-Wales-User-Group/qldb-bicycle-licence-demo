@@ -43,24 +43,24 @@ export default function LicenceHistory(props) {
 
   return (
     <Container>
-    <Row className="p-4">
-      <Card >
-        <Card.Body>
-          <Card.Title>Licence history</Card.Title>
-          <Card.Subtitle className="mb-2 text-muted">does this have its own history?</Card.Subtitle>
+      <Row className="p-4">
+        <Card >
+          <Card.Body>
+            <Card.Title>Licence history</Card.Title>
+            <Card.Subtitle className="mb-2 text-muted">does this have its own history?</Card.Subtitle>
 
-      <Accordion defaultActiveKey="0" alwaysOpen>
-        {items.map((item, index) => (<Accordion.Item  key={item.metadata.version} eventKey={index}>
+            <Accordion defaultActiveKey="0" alwaysOpen>
+              {items.map((item, index) => (<Accordion.Item key={item.metadata.version} eventKey={index}>
 
-          {item.data ?
-            <Accordion.Header>{item.metadata.version} - {item.data.events.eventName} - {item.data.events.eventDate}</Accordion.Header> :
-            <Accordion.Header>{item.metadata.version} - Redacted</Accordion.Header>
-          }
-          {/* <Accordion.Header>{item.metadata.version} - {item.data.events.eventName} - {item.data.events.eventDate}</Accordion.Header> */}
+                {item.data ?
+                  <Accordion.Header>{item.metadata.version} - {item.data.events.eventName} - {item.data.events.eventDate}</Accordion.Header> :
+                  <Accordion.Header>{item.metadata.version} - Redacted</Accordion.Header>
+                }
+                {/* <Accordion.Header>{item.metadata.version} - {item.data.events.eventName} - {item.data.events.eventDate}</Accordion.Header> */}
 
-          <Accordion.Body>
+                <Accordion.Body>
 
-          <Stack>
+                  <Stack>
                     {item.data && <p>firstName: <strong>{item.data.firstName}</strong></p>}
                     {item.data && <p>lastName: <strong>{item.data.lastName}</strong></p>}
                     {item.data && <p>street: <strong>{item.data.street}</strong></p>}
@@ -70,15 +70,15 @@ export default function LicenceHistory(props) {
                     {item.data ? <Button variant="secondary" onClick={(event) => redact(event, item.metadata.version)}>Redact</Button> : 'redacted'}
 
                   </Stack>
- 
-          </Accordion.Body>
 
-        </Accordion.Item>))}
+                </Accordion.Body>
 
-      </Accordion>
+              </Accordion.Item>))}
+
+            </Accordion>
 
 
-    </Card.Body></Card></Row></Container>
+          </Card.Body></Card></Row></Container>
 
   );
 }

@@ -10,6 +10,7 @@ import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 
 import Row from 'react-bootstrap/Row';
+import Table from 'react-bootstrap/Table';
 
 
 export default function Endorsement(props) {
@@ -17,6 +18,8 @@ export default function Endorsement(props) {
 
   const [formValues, setFormValues] = useState({ points: '', issueDtm: '', expiryDtm: '' });
   const [noEndorsements, setNoEndorsement] = useState({ title: '', detail: '', status: '' });
+  const [endorsements, setEndorsement] = useState([]);
+
   const [trigger, setTrigger] = useState(0);
 
 
@@ -27,12 +30,10 @@ export default function Endorsement(props) {
       API.get(apiName, path)
         .then((response) => {
           console.log(response);
-          // const { email, mobile } = response;
+          setEndorsement(response);
 
         }).catch((e) => {
           if (e.response.status === 404) {
-            // const { firstName, lastName, street, county, postcode, status } = response;
-            // setValues({ error, lastName, street, county, postcode, status });
             console.log(e.response.data)
             setNoEndorsement(e.response.data);
           }
@@ -66,11 +67,36 @@ export default function Endorsement(props) {
               <Card >
                 <Card.Body>
                   <Card.Title>Endorsement Details</Card.Title>
-                    {noEndorsements.status && <Card.Text>title: <strong>{noEndorsements.title}</strong></Card.Text>}
-                    {noEndorsements.status && <Card.Text>detail: <strong>{noEndorsements.detail}</strong></Card.Text>}
+                  {noEndorsements.status && <Card.Text>title: <strong>{noEndorsements.title}</strong></Card.Text>}
+                  {noEndorsements.status && <Card.Text>detail: <strong>{noEndorsements.detail}</strong></Card.Text>}
 
 
+                  <Table>
+                    <thead>
+                      <tr>
+                        <th>id</th>
+
+                        <th>points</th>
+                        <th>issue date</th>
+                        <th>expiry date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+
+                      {endorsements.map((item) => (
+                        <tr key={item.endorsementId}>
+                          <td>{item.endorsementId}</td>
+                          <td>{item.points}</td>
+                          <td>{item.issueDtm}</td>
+                          <td>{item.expiryDtm}</td>
+                        </tr>
+                      ))}
+
+                    </tbody>
+                  </Table>
                   {/* <Card.Text> */}
+                  <Card.Subtitle className="mt-4 mb-2 text-muted">add endorsement</Card.Subtitle>
+
                   <Form onSubmit={handleSubmit} >
 
                     <Form.Group className="mb-3" controlId="validationPoints">
