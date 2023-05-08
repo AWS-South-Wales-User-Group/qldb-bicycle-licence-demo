@@ -11,6 +11,7 @@ import Button from 'react-bootstrap/Button';
 
 import Row from 'react-bootstrap/Row';
 import Table from 'react-bootstrap/Table';
+import EndorsementHistory from "./EndorsementHistory";
 
 
 export default function Endorsement(props) {
@@ -52,7 +53,6 @@ export default function Endorsement(props) {
           const apiName = "ApiGatewayRestApi";
           const path = `/licences/endorsement`;
           values.licenceId = licenceId;
-          console.log(values)
           await API.post(apiName, path, { body: values })
 
           setTrigger((trigger) => trigger + 1);
@@ -69,7 +69,6 @@ export default function Endorsement(props) {
                   <Card.Title>Endorsement Details</Card.Title>
                   {noEndorsements.status && <Card.Text>title: <strong>{noEndorsements.title}</strong></Card.Text>}
                   {noEndorsements.status && <Card.Text>detail: <strong>{noEndorsements.detail}</strong></Card.Text>}
-
 
                   <Table>
                     <thead>
@@ -144,6 +143,8 @@ export default function Endorsement(props) {
 
 
       </Formik>
+
+      <EndorsementHistory licenceId={licenceId} trigger={trigger} />
 
 
 
