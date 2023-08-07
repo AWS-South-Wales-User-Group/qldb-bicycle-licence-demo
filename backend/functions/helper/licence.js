@@ -388,7 +388,7 @@ const getLicenceSummary = async (userId) => {
     if (resultList.length === 0) {
       throw new LicenceNotFoundError(400, 'Licence Not Found Error', `No licence records found registered to userId ${userId}`);
     } else {
-      licence = JSON.stringify(resultList[0]);
+      licence = JSON.stringify(resultList);
     }
   });
   return licence;
