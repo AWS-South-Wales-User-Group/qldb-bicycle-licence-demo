@@ -368,6 +368,33 @@ const getLicence = async (licenceId, userId) => {
   return licence;
 };
 
+
+/**
+ * Helper function to retrieve the current state of a licence record
+ * @param id The document id of the document to retrieve
+ * @returns The JSON document to return to the client
+ */
+const getLicenceSummary = async (userId) => {
+  console.log(`In getLicenceSummary function with userId ${userId}`);
+
+  let licence;
+  // Get a QLDB Driver instance
+  const qldbDriver = await getQldbDriver();
+  await qldbDriver.executeLambda(async (txn) => {
+    // Get the current record
+    const result = await txn.execute('SELECT licenceId, firstName, lastName, postcode FROM Licence WHERE userId = ?', userId);
+    const resultList = result.getResultList();
+
+    if (resultList.length === 0) {
+      throw new LicenceNotFoundError(400, 'Licence Not Found Error', `No licence records found registered to userId ${userId}`);
+    } else {
+      licence = JSON.stringify(resultList[0]);
+    }
+  });
+  return licence;
+};
+
+
 /**
  * Helper function to retrieve the current state of a licence record
  * @param id The document id of the document to retrieve
@@ -704,6 +731,7 @@ module.exports = {
   getLicence,
   getContact,
   getLicenceHistory,
+  getLicenceSummary,
   updateLicenceAddress,
   deleteLicence,
   redactLicence,

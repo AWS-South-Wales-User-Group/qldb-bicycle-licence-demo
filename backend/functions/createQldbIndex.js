@@ -33,6 +33,7 @@ const handler = async (event, context) => {
         await qldbDriver.executeLambda(async (txn) => {
           Promise.all([
             createIndex(txn, process.env.LICENCE_TABLE, process.env.LICENCE_INDEX_1),
+            createIndex(txn, process.env.LICENCE_TABLE, process.env.LICENCE_INDEX_2),
             createIndex(txn, process.env.CONTACT_TABLE, process.env.CONTACT_INDEX_1),
             createIndex(txn, process.env.CONTACT_TABLE, process.env.CONTACT_INDEX_2),
             createIndex(txn, process.env.ENDORSEMENT_TABLE, process.env.ENDORSEMENT_INDEX_1),

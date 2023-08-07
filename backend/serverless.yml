@@ -223,6 +223,31 @@ functions:
  #           type: COGNITO_USER_POOLS
   #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
+
+  getLicenceSummary:
+    name: get-bicycle-licence-summary-${self:provider.stage}
+    handler: functions/get-licence-summary.handler
+    environment:
+      POWERTOOLS_SERVICE_NAME: qldb-getLicenceSummary
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow       
+        Action: 
+          - qldb:PartiQLSelect
+        Resource: 
+          - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/table/*'
+    events:
+      - http:
+          path: /licences/summary
+          method: get
+          cors: true
+#          authorizer:
+ #           type: COGNITO_USER_POOLS
+  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+
+
+
+
   getContactHistory:
     name: get-contact-history-${self:provider.stage}
     handler: functions/get-contact-history.handler
@@ -417,6 +442,7 @@ functions:
     environment:
       LICENCE_TABLE: Licence
       LICENCE_INDEX_1: licenceId
+      LICENCE_INDEX_2: userId
       CONTACT_TABLE: Contact
       CONTACT_INDEX_1: licenceId
       CONTACT_INDEX_2: email
