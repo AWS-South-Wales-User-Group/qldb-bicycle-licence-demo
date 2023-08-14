@@ -4,6 +4,11 @@
 
 The backend components of the Bicycle Licence sample application setup the Amazon QLDB Ledger, and provides a number of APIs to interact with the ledger.
 
+## requirements:
+
+node 16 +
+npm 9.5 +
+
 ## Creating the Ledger
 
 The stack can be deployed by using the following commands:

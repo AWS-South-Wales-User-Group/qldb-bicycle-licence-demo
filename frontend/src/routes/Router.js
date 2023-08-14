@@ -12,6 +12,7 @@ import NewLicenceView from '../components/NewLicenceView';
 import Root from "./Root";
 import ErrorPage from "../error-page";
 import Endorsement from "../components/Endorsement";
+import LicenceSummary from "../components/LicenceSummary";
 
 
 const router = createBrowserRouter([
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
     element: <Root />,
     errorElement: <ErrorPage />,
     children: [
+      {
+        path: "/",
+        element: <LicenceSummary />,
+      },
       {
         path: "licence/new",
         element: <NewLicenceView />,
