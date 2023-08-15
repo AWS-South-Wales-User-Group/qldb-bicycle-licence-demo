@@ -17,6 +17,7 @@ const metrics = new Metrics();
 tracer.captureAWS(require('aws-sdk'));
 
 const handler = async (event) => {
+  logger.debug("EVENT\n" + JSON.stringify(event, null, 2));
   const {
     firstName, lastName, email, street, county, postcode, mobile
   } = JSON.parse(event.body);

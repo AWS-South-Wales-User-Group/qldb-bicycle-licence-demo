@@ -65,9 +65,9 @@ functions:
           path: /licences
           method: post
           cors: true
-#          authorizer:
- #           type: COGNITO_USER_POOLS
-  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
   updateLicenceAddress:
     name: update-licence-address-${self:provider.stage}
@@ -87,9 +87,9 @@ functions:
           path: /licences/address
           method: put
           cors: true
-#          authorizer:
- #           type: COGNITO_USER_POOLS
-  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
   
   updateLicenceStatus:
     name: update-licence-status-${self:provider.stage}
@@ -109,9 +109,9 @@ functions:
           path: /licences/status
           method: put
           cors: true
-#          authorizer:
- #           type: COGNITO_USER_POOLS
-  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
   updateContact:
     name: update-bicycle-contact-${self:provider.stage}
@@ -133,9 +133,9 @@ functions:
           path: /licences/contact
           method: put
           cors: true
-#          authorizer:
- #           type: COGNITO_USER_POOLS
-  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
   addEndorsement:
     name: add-endorsement-${self:provider.stage}
@@ -156,9 +156,9 @@ functions:
           path: /licences/endorsement
           method: post
           cors: true
-#          authorizer:
- #           type: COGNITO_USER_POOLS
-  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
   getLicence:
     name: get-bicycle-licence-${self:provider.stage}
@@ -177,9 +177,9 @@ functions:
           path: /licences/{licenceid}
           method: get
           cors: true
-#          authorizer:
- #           type: COGNITO_USER_POOLS
-  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
   getContact:
     name: get-contact-${self:provider.stage}
@@ -198,9 +198,9 @@ functions:
           path: /licences/{licenceid}/contact
           method: get
           cors: true
-#          authorizer:
- #           type: COGNITO_USER_POOLS
-  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
   getLicenceHistory:
     name: get-bicycle-licence-history-${self:provider.stage}
@@ -219,9 +219,9 @@ functions:
           path: /licences/{licenceid}/history
           method: get
           cors: true
-#          authorizer:
- #           type: COGNITO_USER_POOLS
-  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
 
   getLicenceSummary:
@@ -241,9 +241,9 @@ functions:
           path: /licences/summary
           method: get
           cors: true
-#          authorizer:
- #           type: COGNITO_USER_POOLS
-  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
 
 
@@ -266,9 +266,9 @@ functions:
           path: /licences/{licenceid}/contact/history
           method: get
           cors: true
-#          authorizer:
- #           type: COGNITO_USER_POOLS
-  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
   getEndorsement:
     name: get-endorsement-${self:provider.stage}
@@ -287,9 +287,9 @@ functions:
           path: /licences/{licenceid}/endorsements
           method: get
           cors: true
-#          authorizer:
- #           type: COGNITO_USER_POOLS
-  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
 
   getEndorsementHistory:
@@ -310,9 +310,9 @@ functions:
           path: /licences/{licenceid}/endorsements/history
           method: get
           cors: true
-#          authorizer:
- #           type: COGNITO_USER_POOLS
-  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
   deleteLicence:
     name: delete-bicycle-licence-${self:provider.stage}
@@ -332,9 +332,9 @@ functions:
           path: /licences
           method: delete
           cors: true
-#          authorizer:
- #           type: COGNITO_USER_POOLS
-  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
   redactLicence:
     name: redact-licence-${self:provider.stage}
@@ -357,9 +357,9 @@ functions:
           path: /licences/redact
           method: post
           cors: true
-#          authorizer:
- #           type: COGNITO_USER_POOLS
-  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
   redactLicenceRevision:
     name: redact-licence-revision-${self:provider.stage}
@@ -382,9 +382,9 @@ functions:
           path: /licences/revision/redact
           method: post
           cors: true
-#          authorizer:
- #           type: COGNITO_USER_POOLS
-  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
 
   deleteEndorsement:
@@ -405,9 +405,9 @@ functions:
           path: /licences/endorsement
           method: delete
           cors: true
-#          authorizer:
- #           type: COGNITO_USER_POOLS
-  #          authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
   createQldbDemoTable:
     name: qldb-licence-table-${self:provider.stage}
