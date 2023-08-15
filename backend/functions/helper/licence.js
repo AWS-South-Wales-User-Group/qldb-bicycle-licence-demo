@@ -228,6 +228,7 @@ const updateLicenceAddress = async (licenceId, street, county, postcode, userId,
   let tableId;
   let blockAddress;
   let docId;
+  let version;
 
   // Get a QLDB Driver instance
   const qldbDriver = await getQldbDriver();
@@ -241,9 +242,12 @@ const updateLicenceAddress = async (licenceId, street, county, postcode, userId,
       throw new LicenceIntegrityError(400, 'Licence Integrity Error', `Contact record with id ${licenceId} does not exist`);
     } else {
 
+      logger.debug(`COMMITTED QUERY RESULT: ${committedQueryResultList[0]}`);
+
       // now to redact the old version
       blockAddress = committedQueryResultList[0].blockAddress;
       docId = committedQueryResultList[0].metadata.id;
+      version = committedQueryResultList[0].metadata.version;
 
       // Get the tableId
       const tableResult = await getTableId(txn, 'Contact');
@@ -271,6 +275,7 @@ const updateLicenceAddress = async (licenceId, street, county, postcode, userId,
     logger.debug('Completed redactAndUpdateContact');
   })
 
+  await waitUntilRevisionRedacted(logger, `Contact`, docId, version);
   return licence;
 };
 
@@ -658,12 +663,12 @@ const deleteLicence = async (id, userId) => {
       licence = '{"response": "Selected revision of document now redacted"}';
     }
   });
-  await waitUntilRevisionRedacted(logger, licenceId, version);
+  await waitUntilRevisionRedacted(logger, `Licence`, licenceId, version);
   return licence;
 };
 
 
-const waitUntilRevisionRedacted = async (logger, licenceId, version) => {
+const waitUntilRevisionRedacted = async (logger, tableName, licenceId, version) => {
   logger.debug(`In waitUntilRevisionRedacted function`);
 
   let isRedacted = false;
@@ -671,10 +676,8 @@ const waitUntilRevisionRedacted = async (logger, licenceId, version) => {
 
   while (!isRedacted) {
     await qldbDriver.executeLambda(async (txn) => {
-      // Get the current record
-
       // retrieve revision from history function
-      const revisionQuery = 'SELECT * FROM history(Licence) WHERE metadata.id = ? AND metadata.version = ?';
+      const revisionQuery = `SELECT * FROM history(${tableName}) WHERE metadata.id = ? AND metadata.version = ?`;
       const revisionResult = await txn.execute(revisionQuery, licenceId, version);
       const revisionResultList = revisionResult.getResultList();
 

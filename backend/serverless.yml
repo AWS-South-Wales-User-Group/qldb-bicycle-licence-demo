@@ -125,6 +125,7 @@ functions:
           - qldb:PartiQLSelect
           - qldb:PartiQLUpdate
           - qldb:PartiQLRedact
+          - qldb:PartiQLHistoryFunction
         Resource: 
           - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/table/*'
           - !Sub 'arn:aws:qldb:${AWS::Region}:${AWS::AccountId}:ledger/${self:custom.ledgerName}/information_schema/user_tables'
@@ -244,9 +245,6 @@ functions:
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId: !ImportValue QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
-
-
-
 
   getContactHistory:
     name: get-contact-history-${self:provider.stage}
