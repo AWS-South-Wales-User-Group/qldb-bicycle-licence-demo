@@ -22,8 +22,7 @@ const handler = async (event) => {
   const {
     licenceId, street, county, postcode
   } = JSON.parse(event.body);
-//  const userId = event.requestContext.authorizer.claims.sub;
-  const userId = 1234;
+  const userId = event.requestContext.authorizer.claims.sub;
   const eventInfo = { eventName: 'LicenceAddressUpdated', eventDate: date.format(new Date(), 'YYYY/MM/DD HH:mm:ss') };
   logger.debug(`In the update licence address handler with: licenceId ${licenceId} street ${street} county ${county} and postcode ${postcode}`);
 

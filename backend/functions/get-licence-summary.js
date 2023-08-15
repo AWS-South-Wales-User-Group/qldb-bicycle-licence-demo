@@ -17,8 +17,7 @@ const metrics = new Metrics();
 tracer.captureAWS(require('aws-sdk'));
 
 const handler = async (event) => {
-  const userId = 1234;
-//  const userId = event.requestContext.authorizer.claims.sub;
+  const userId = event.requestContext.authorizer.claims.sub;
   logger.debug(`In the get-licence-summary handler with userId ${userId}`);
 
   try {

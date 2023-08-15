@@ -21,8 +21,7 @@ const handler = async (event) => {
   const {
     licenceId, points, issueDtm, expiryDtm
   } = JSON.parse(event.body);
-//  const userId = event.requestContext.authorizer.claims.sub;
-  const userId = 1234;
+  const userId = event.requestContext.authorizer.claims.sub;
   const eventInfo = { eventName: 'EndorsementAdded', eventDate: date.format(new Date(), 'YYYY/MM/DD HH:mm:ss') };
 
   logger.debug(`In the add endorsement handler with: licenceId ${licenceId} points ${points} issueDtm ${issueDtm} and expiryDtm ${expiryDtm}`);

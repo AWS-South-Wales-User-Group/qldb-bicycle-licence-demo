@@ -19,8 +19,7 @@ tracer.captureAWS(require('aws-sdk'));
 
 const handler = async (event) => {
   const { licenceId, status } = JSON.parse(event.body);
-  const userId = 1234;
-//  const userId = event.requestContext.authorizer.claims.sub;
+  const userId = event.requestContext.authorizer.claims.sub;
   logger.debug(`In the update licence status handler with licenceId ${licenceId} and status ${status}`);
   const eventInfo = { eventName: 'LicenceStatusUpdated', eventDate: date.format(new Date(), 'YYYY/MM/DD HH:mm:ss') };
 

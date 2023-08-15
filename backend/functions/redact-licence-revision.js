@@ -18,8 +18,7 @@ tracer.captureAWS(require('aws-sdk'));
 
 const handler = async (event) => {
   const { licenceId, version } = JSON.parse(event.body);
-  const userId = 1234;
-//  const userId = event.requestContext.authorizer.claims.sub;
+  const userId = event.requestContext.authorizer.claims.sub;
   logger.debug(`In the delete licence handler for licenceid ${licenceId} and version ${version}`);
 
   try {

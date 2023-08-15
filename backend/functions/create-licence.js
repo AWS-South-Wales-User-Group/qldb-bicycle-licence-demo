@@ -20,8 +20,7 @@ const handler = async (event) => {
   const {
     firstName, lastName, email, street, county, postcode, mobile
   } = JSON.parse(event.body);
-//  const userId = event.requestContext.authorizer.claims.sub;
-  const userId = 1234;
+  const userId = event.requestContext.authorizer.claims.sub;
 
   logger.debug(`In the create licence handler with: first name ${firstName} last name ${lastName} email ${email} street ${street} county ${county} postcode ${postcode} mobile ${mobile} userId ${userId}`);
 

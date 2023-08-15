@@ -22,8 +22,7 @@ const handler = async (event) => {
   const {
     licenceId, mobile
   } = JSON.parse(event.body);
-  const userId = 1234;
-//  const userId = event.requestContext.authorizer.claims.sub;
+  const userId = event.requestContext.authorizer.claims.sub;
   const eventInfo = { eventName: 'ContactUpdated', eventDate: date.format(new Date(), 'YYYY/MM/DD HH:mm:ss') };
   logger.debug(`In the update contact handler with: licenceId ${licenceId} and mobile ${mobile}`);
 
