@@ -67,8 +67,11 @@ export default function LicenceHistory(props) {
                     {item.data && <p>county: <strong>{item.data.county}</strong></p>}
                     {item.data && <p>postcode: <strong>{item.data.postcode}</strong></p>}
                     {item.data && <p>status: <strong>{item.data.status}</strong></p>}
-                    {item.data ? <Button variant="secondary" onClick={(event) => redact(event, item.metadata.version)}>Redact</Button> : 'redacted'}
-
+                    {item.dataHash !== undefined || item.metadata.version === (items.length -1) ? null : (
+                      <Button variant="secondary" onClick={(event) => redact(event, item.metadata.version)}>
+                        Redact
+                      </Button>
+                    )}
                   </Stack>
 
                 </Accordion.Body>
