@@ -27,7 +27,7 @@ export default function LicenceSummary(props) {
           <Card.Body>
             <Card.Title>Licence Summary</Card.Title>
             <Card.Subtitle className="mb-2 text-muted">
-              list of all your licences
+              A list of all licences registered by user
             </Card.Subtitle>
 
             <Table hover>
@@ -48,7 +48,7 @@ export default function LicenceSummary(props) {
                       <td>{item.postcode}</td>
                       <td><Link to={"/licence/"+item.licenceId}><Button variant="secondary">view</Button></Link></td>
                     </tr>
-                  ))};
+                  ))}
                 </tbody>
             </Table>
             
