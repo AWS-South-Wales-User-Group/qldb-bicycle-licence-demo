@@ -9,7 +9,7 @@ import Licence from '../components/Licence';
 import Contact from '../components/Contact';
 import NewLicenceView from '../components/NewLicenceView';
 
-import Root from "./root";
+import Root from "./Root.js";
 import ErrorPage from "../error-page";
 import Endorsement from "../components/Endorsement";
 import LicenceSummary from "../components/LicenceSummary";

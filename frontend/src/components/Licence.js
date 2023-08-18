@@ -32,6 +32,15 @@ export default function Licence(props) {
     }
   }, [licenceId]);
 
+  const deleteLicence = (event) => {
+    event.preventDefault();
+    const apiName = "ApiGatewayRestApi";
+    const path = `/licences`;
+    API.del(apiName, path, { body: { licenceId } }).then(() => {
+      setTrigger((trigger) => trigger + 1);
+    });
+  }
+
   return (
     <>
       <Formik
@@ -115,7 +124,7 @@ export default function Licence(props) {
                     <Button variant="primary" type="submit" value="update">
                       update
                     </Button>&nbsp; 
-                    <Button variant="primary" type="submit" value="delete">
+                    <Button variant="primary" onClick={(event) => deleteLicence(event)} value="delete"> 
                       delete
                     </Button>
                   </Form>
