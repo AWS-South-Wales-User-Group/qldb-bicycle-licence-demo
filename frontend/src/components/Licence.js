@@ -38,6 +38,7 @@ export default function Licence(props) {
         initialValues={formValues}
         enableReinitialize={true}
         onSubmit={async (values) => {
+
           const apiName = "ApiGatewayRestApi";
           const path = `/licences/address`;
           values.licenceId = licenceId;
@@ -111,8 +112,11 @@ export default function Licence(props) {
                         <Form.Control.Feedback type="invalid">{errors.postcode}</Form.Control.Feedback>
                       </Form.Group>
                     </Row>
-                    <Button variant="primary" type="submit">
+                    <Button variant="primary" type="submit" value="update">
                       update
+                    </Button>&nbsp; 
+                    <Button variant="primary" type="submit" value="delete">
+                      delete
                     </Button>
                   </Form>
                 </Card.Body>
