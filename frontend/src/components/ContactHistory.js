@@ -38,7 +38,7 @@ export default function ContactHistory(props) {
         <Card >
           <Card.Body>
             <Card.Title>Contact history</Card.Title>
-            <Card.Subtitle className="mb-2 text-muted">https://dev.to/aws-heroes/redacting-data-in-amazon-qldb-1o06 - pattern 3</Card.Subtitle>
+            <Card.Subtitle className="mb-2 text-muted">Full revision history for the contact details</Card.Subtitle>
 
             <Accordion defaultActiveKey="0" alwaysOpen>
               {items.map((item, index) => (<Accordion.Item key={item.metadata.version} eventKey={index}>

@@ -63,7 +63,7 @@ export default function Licence(props) {
               <Card >
                 <Card.Body>
                   <Card.Title>Licence Details <Badge bg="info" className="m-3 position-absolute end-0">{values.status}</Badge></Card.Title>
-                  <Card.Subtitle className="mb-2 text-muted">does this have its own history?</Card.Subtitle>
+                  <Card.Subtitle className="mb-2 text-muted">The current licence details as held in the ledger</Card.Subtitle>
 
                   <Form onSubmit={handleSubmit} >
                     <Row className="mb-3">

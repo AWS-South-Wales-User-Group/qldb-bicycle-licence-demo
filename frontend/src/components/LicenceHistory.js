@@ -47,7 +47,7 @@ export default function LicenceHistory(props) {
         <Card >
           <Card.Body>
             <Card.Title>Licence history</Card.Title>
-            <Card.Subtitle className="mb-2 text-muted">does this have its own history?</Card.Subtitle>
+            <Card.Subtitle className="mb-2 text-muted">Full revision history for this licence</Card.Subtitle>
 
             <Accordion defaultActiveKey="0" alwaysOpen>
               {items.map((item, index) => (<Accordion.Item key={item.metadata.version} eventKey={index}>

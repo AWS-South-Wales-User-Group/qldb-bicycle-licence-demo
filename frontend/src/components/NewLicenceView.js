@@ -204,15 +204,17 @@ export default function NewLicenceView() {
                 <Row className="p-2">
                   <Col className="text-end">
                     <Button className="m-2 btn-light" onClick={() => {
+                      let firstName = faker.name.firstName();
+                      let lastName = faker.name.lastName();
                       formik.setValues(
                         {
-                          firstName: faker.name.firstName(),
-                          lastName: faker.name.lastName(),
-                          email: faker.internet.email(),
+                          firstName: firstName,
+                          lastName: lastName,
+                          email: firstName + '.' + lastName + '@email.com',
                           street: faker.address.streetAddress(),
                           county: faker.address.county(),
-                          mobile: faker.phone.number(),
-                          postcode: faker.address.zipCode()
+                          mobile: faker.phone.number('+44-####-######'),
+                          postcode: faker.address.zipCode('#####')
                         }
                       )
                     }}>Generate test data</Button>

@@ -51,9 +51,7 @@ export default function EndorsementHistory(props) {
 
             <Stack>
               {items.map((item, index) => (<div key={"d-" + index}>
-
-                <p className="pt-3" key={"p-" + index}> History for Endorsement: needs to be a key here </p>
-
+                <p className="pt-3" key={"p-" + index}/>
                 <Accordion key={"a-" + index} defaultActiveKey="0" alwaysOpen>
                   {item.map((item2, index) => (<Accordion.Item key={item2.metadata.version} eventKey={index}>
                     {item2.data ?
@@ -72,11 +70,6 @@ export default function EndorsementHistory(props) {
                     </Accordion.Body>
                   </Accordion.Item>))}
                 </Accordion>
-
-
-
-
-
               </div>))}
 
             </Stack>

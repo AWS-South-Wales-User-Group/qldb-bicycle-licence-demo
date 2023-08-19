@@ -54,7 +54,7 @@ export default function Contact(props) {
               <Card >
                 <Card.Body>
                   <Card.Title>Contact Details</Card.Title>
-                  <Card.Subtitle className="mb-2 text-muted">does this have its own history?</Card.Subtitle>
+                  <Card.Subtitle className="mb-2 text-muted">The current contact details as held in the ledger for this licence</Card.Subtitle>
 
                   {/* <Card.Text> */}
                   <Form onSubmit={handleSubmit} >

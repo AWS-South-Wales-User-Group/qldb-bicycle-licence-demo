@@ -67,8 +67,9 @@ export default function Endorsement(props) {
               <Card >
                 <Card.Body>
                   <Card.Title>Endorsement Details</Card.Title>
-                  {noEndorsements.status && <Card.Text>title: <strong>{noEndorsements.title}</strong></Card.Text>}
-                  {noEndorsements.status && <Card.Text>detail: <strong>{noEndorsements.detail}</strong></Card.Text>}
+
+                    {noEndorsements.status && <Card.Text>title: <strong>{noEndorsements.title}</strong></Card.Text>}
+                    {noEndorsements.status && <Card.Text>detail: <strong>{noEndorsements.detail}</strong></Card.Text>}
 
                   <Table>
                     <thead>
@@ -100,7 +101,7 @@ export default function Endorsement(props) {
 
                     <Form.Group className="mb-3" controlId="validationPoints">
                       <Form.Label>points:</Form.Label>
-                      <Form.Control type="points" name="points"
+                      <Form.Control type="range" class="form-range" min="0" max="10" name="points"
                         onChange={handleChange} value={values.points}
                         isValid={touched.points && !errors.points}
                       />
@@ -108,8 +109,8 @@ export default function Endorsement(props) {
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="validationIssueDtm">
-                      <Form.Label>issueDtm: 2013/10/10 10:10:10</Form.Label>
-                      <Form.Control type="text" name="issueDtm"
+                      <Form.Label>issueDate: </Form.Label>
+                      <Form.Control type="date" name="issueDtm"
                         onChange={handleChange} value={values.issueDtm}
                         isValid={touched.issueDtm && !errors.issueDtm}
                       />
@@ -117,7 +118,7 @@ export default function Endorsement(props) {
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="validationExpiryDtm">
-                      <Form.Label>expiryDtm:</Form.Label>
+                      <Form.Label>expiryDate: </Form.Label>
                       <Form.Control type="text" name="expiryDtm"
                         onChange={handleChange} value={values.expiryDtm}
                         isValid={touched.expiryDtm && !errors.expiryDtm}
