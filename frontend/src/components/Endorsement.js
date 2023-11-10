@@ -12,6 +12,7 @@ import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Table from 'react-bootstrap/Table';
 import EndorsementHistory from "./EndorsementHistory";
+import Col from "react-bootstrap/esm/Col";
 
 
 export default function Endorsement(props) {
@@ -96,42 +97,47 @@ export default function Endorsement(props) {
                   </Table>
                   {/* <Card.Text> */}
                   <Card.Subtitle className="mt-4 mb-2 text-muted">add endorsement</Card.Subtitle>
-
                   <Form onSubmit={handleSubmit} >
+                    <Container>
+                      <Row>
+                        <Col md={4} >
+                          <Form.Group className="mb-3" controlId="validationPoints">
+                            <Form.Label>points:</Form.Label>
+                            <Form.Control type="number" min="0" max="10" name="points"
+                              onChange={handleChange} value={values.points}
+                              isValid={touched.points && !errors.points}
+                            />
+                            <Form.Control.Feedback type="invalid">{errors.points}</Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+                        <Col md={8}>
+                          <Form.Group className="mb-3" controlId="validationIssueDtm">
+                            <Form.Label>issueDate: </Form.Label>
+                            <Form.Control type="date" name="issueDtm"
+                              onChange={handleChange} value={values.issueDtm}
+                              isValid={touched.issueDtm && !errors.issueDtm}
+                            />
+                            <Form.Control.Feedback type="invalid">{errors.issueDtm}</Form.Control.Feedback>
+                          </Form.Group>
 
-                    <Form.Group className="mb-3" controlId="validationPoints">
-                      <Form.Label>points:</Form.Label>
-                      <Form.Control type="range" class="form-range" min="0" max="10" name="points"
-                        onChange={handleChange} value={values.points}
-                        isValid={touched.points && !errors.points}
-                      />
-                      <Form.Control.Feedback type="invalid">{errors.points}</Form.Control.Feedback>
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" controlId="validationIssueDtm">
-                      <Form.Label>issueDate: </Form.Label>
-                      <Form.Control type="date" name="issueDtm"
-                        onChange={handleChange} value={values.issueDtm}
-                        isValid={touched.issueDtm && !errors.issueDtm}
-                      />
-                      <Form.Control.Feedback type="invalid">{errors.issueDtm}</Form.Control.Feedback>
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" controlId="validationExpiryDtm">
-                      <Form.Label>expiryDate: </Form.Label>
-                      <Form.Control type="text" name="expiryDtm"
-                        onChange={handleChange} value={values.expiryDtm}
-                        isValid={touched.expiryDtm && !errors.expiryDtm}
-                      />
-                      <Form.Control.Feedback type="invalid">{errors.expiryDtm}</Form.Control.Feedback>
-                    </Form.Group>
-
-
-                    <Button variant="primary" type="submit">
-                      update
-                    </Button>
+                          <Form.Group className="mb-3" controlId="validationExpiryDtm">
+                            <Form.Label>expiryDate: </Form.Label>
+                            <Form.Control type="date" name="expiryDtm"
+                              min={values.issueDtm}
+                              onChange={handleChange} value={values.expiryDtm}
+                              isValid={touched.expiryDtm && !errors.expiryDtm}
+                            />
+                            <Form.Control.Feedback type="invalid">{errors.expiryDtm}</Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Button variant="primary" type="submit">
+                          update
+                        </Button>
+                      </Row>
+                    </Container>
                   </Form>
-
                   {/* </Card.Text> */}
                 </Card.Body>
               </Card>
