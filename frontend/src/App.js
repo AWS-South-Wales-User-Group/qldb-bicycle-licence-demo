@@ -1,123 +1,65 @@
-import React, { useState, useEffect } from "react";
-import Register from "./components/Register.js";
-import History from "./components/History.js";
-import Search from "./components/Search.js";
-import Enquiry from "./components/Enquiry.js";
-import "bootstrap/dist/css/bootstrap.min.css";
-import Navbar from "react-bootstrap/Navbar";
-import NavDropdown from "react-bootstrap/NavDropdown";
-import Nav from "react-bootstrap/Nav";
-import Avatar from "react-avatar";
-import { withAuthenticator, AmplifySignOut } from "@aws-amplify/ui-react";
-import Auth from "@aws-amplify/auth";
-import API from "@aws-amplify/api";
+import React from "react";
+import { Authenticator, useTheme, Image, View} from '@aws-amplify/ui-react';
+import Container from 'react-bootstrap/Container';
+import Navbar from 'react-bootstrap/Navbar';
+import NavDropdown from 'react-bootstrap/NavDropdown';
 
-import Container from "react-bootstrap/Container";
-import { Switch, Route, Redirect } from "react-router-dom";
-import { LinkContainer } from "react-router-bootstrap";
+import '@aws-amplify/ui-react/styles.css';
+import Router from "./routes/Router.js";
+
+
+
+const components = {
+  Header() {
+    const { tokens } = useTheme();
+    return (
+      <View textAlign="center" padding={tokens.space.large}>
+        <Image
+          alt="Amplify logo"
+          src="https://qldbguide.com/assets/QLDB-Guide.svg"
+        />
+      </View>
+    );
+  },
+}
+
 
 function App() {
-  const [user, setUser] = useState();
-  const [email, setEmail] = useState();
-  const [group, setGroup] = useState();
-  function switchRole(evt) {
-    console.log(evt);
-
-    const apiName = "ApiGatewayRestApi";
-    const path = `/switch-roles/${evt}`;
-    API.get(apiName, path)
-      .then((response) => {
-        console.log(response);
-       
-      })
-      .catch((error) => {
-        console.log("In the error handler: " + error);
-      });
-      Auth.currentAuthenticatedUser({bypassCache:true}).then(
-        (response) => {
-          console.log(response);
-          setGroup(
-            response.signInUserSession.accessToken.payload["cognito:groups"]
-          );
-        }
-      );
-  }
-
-  useEffect(() => {
-    Auth.currentUserInfo().then((response) => {
-      setUser(response.username);
-      setEmail(response.attributes.email);
-    });
-    Auth.currentAuthenticatedUser().then((response) => {
-      setGroup(
-        response.signInUserSession.accessToken.payload["cognito:groups"]
-      );
-    });
-  }, []);
 
   return (
-    <>
-      <Navbar bg='dark' variant='dark'>
-        <Navbar.Brand>QLDB Bicycle</Navbar.Brand>
-        <Nav className='mr-auto' activeKey='/'>
-          <LinkContainer to='/register'>
-            <Nav.Link>Register</Nav.Link>
-          </LinkContainer>
-          <LinkContainer to='/history'>
-            <Nav.Link>History</Nav.Link>
-          </LinkContainer>
-          <LinkContainer to='/search'>
-            <Nav.Link>Search</Nav.Link>
-          </LinkContainer>
-          <LinkContainer to='/enquiry'>
-            <Nav.Link>Enquiry</Nav.Link>
-          </LinkContainer>
-        </Nav>
 
-        <Nav>
-          <NavDropdown
-            alignRight
-            onSelect={switchRole}
-            title={
-              <>
-                {email && (
-                  <Avatar
-                    email={email}
-                    name={user}
-                    className='rounded-circle'
-                    size={35}
-                  />
-                )}
-              </>
-            }
-          >
-            {/* <NavDropdown.ItemText>current role: {group}</NavDropdown.ItemText>
-            <NavDropdown.Divider />
+    <Authenticator components={components} signUpAttributes={[
+      'email'
+    ]}>
 
-            <NavDropdown.Item eventKey='ad'>Admin</NavDropdown.Item>
-            <NavDropdown.Item eventKey='au'>Audit</NavDropdown.Item>
-            <NavDropdown.Item eventKey='ro'>Readonly</NavDropdown.Item> */}
-            {/* <NavDropdown.Divider /> */}
-            <div className='dropdown-item'>
-              <AmplifySignOut />
-            </div>
-          </NavDropdown>
-        </Nav>
-      </Navbar>
-      <Container>
-        <Switch>
-          <Route path='/register' component={Register} />
-          <Route path='/history' component={History} />
-          <Route path='/search' component={Search} />
-          <Route path='/enquiry' component={Enquiry} />
-          <Route path='/'>
-            <Redirect to='/register' exact />
-          </Route>
-        </Switch>
-      </Container>
-    </>
+      {({ signOut, user }) => (
+        <Container>
+          <Navbar>
+            <Container>
+              <Navbar.Brand href="#home">QLDB Bicycle Licence</Navbar.Brand>
+              <Navbar.Toggle />
+              <Navbar.Collapse className="justify-content-end">
+                <Navbar.Text className="pe-1">
+                  Signed in as:
+                </Navbar.Text>
+                <NavDropdown title={user.username} id="nav-dropdown">
+                  <NavDropdown.Item onClick={signOut} eventKey="signout">Sign out</NavDropdown.Item>
+                </NavDropdown>
+              </Navbar.Collapse>
+            </Container>
+          </Navbar>
+          <Container>
+              <Router />
+          </Container>
+
+        </Container>
+
+      )}
+
+    </Authenticator>
+
   );
 }
 
 
-export default withAuthenticator(App);
+export default App;
