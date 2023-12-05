@@ -9,14 +9,14 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 Amplify.configure({
   Auth: {
     region: "eu-west-2",
-    userPoolId: "eu-west-2_nEdUy5YLN",
-    userPoolWebClientId: "35hom3mtegpkbnd685psghh9ar"
+    userPoolId: "eu-west-2_OaW6J95RN",
+    userPoolWebClientId: "7t79ukif0dvlko9s8ta5ln6i9s"
   },
   API: {
     endpoints: [
       {
         endpoint:
-          "https://hsht6yunic.execute-api.eu-west-2.amazonaws.com/test",
+          "https://g6oswt68t6.execute-api.eu-west-2.amazonaws.com/prod",
         name: "ApiGatewayRestApi",
         region: "eu-west-2",
         custom_header: async () => {
