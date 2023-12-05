@@ -1,13 +1,11 @@
 /*
- * Lambda function that implements the update contact functionality
+ * Lambda function that implements the delete licence functionality
  */
-
 const { Logger, injectLambdaContext } = require('@aws-lambda-powertools/logger');
 const { Tracer, captureLambdaHandler } = require('@aws-lambda-powertools/tracer');
-const { Metrics, logMetrics, MetricUnits } = require('@aws-lambda-powertools/metrics');
-const date = require('date-and-time');
-const { updateContact } = require('./helper/licence');
-const LicenceIntegrityError = require('./lib/LicenceIntegrityError');
+const { Metrics, MetricUnits, logMetrics } = require('@aws-lambda-powertools/metrics');
+const { deleteEndorsement } = require('./helper/licence');
+const LicenceNotFoundError = require('./lib/LicenceNotFoundError');
 const middy = require('@middy/core')
 const cors = require('@middy/http-cors')
 
@@ -19,25 +17,22 @@ const metrics = new Metrics();
 tracer.captureAWS(require('aws-sdk'));
 
 const handler = async (event) => {
-  const {
-    licenceId, mobile
-  } = JSON.parse(event.body);
-  const userId = event.requestContext.authorizer.claims.sub;
-  const eventInfo = { eventName: 'ContactUpdated', eventDate: date.format(new Date(), 'YYYY/MM/DD HH:mm:ss') };
-  logger.debug(`In the update contact handler with: licenceId ${licenceId} and mobile ${mobile}`);
+  const { endorsementId, licenceId } = JSON.parse(event.body);
+  logger.debug(`In the delete endorsement handler for endorsementId ${endorsementId} and licenceId ${licenceId}`);
 
   try {
-    const response = await updateContact(logger, licenceId, mobile, userId, eventInfo);
-    metrics.addMetric('updateContactSucceeded', MetricUnits.Count, 1);
+    const response = await deleteEndorsement(logger, endorsementId, licenceId);
+    metrics.addMetric('deleteEndorsementSucceeded', MetricUnits.Count, 1);
+    const message = JSON.parse(response);
     return {
       statusCode: 201,
-      body: JSON.stringify(response),
+      body: JSON.stringify(message),
     };
   } catch (error) {
-    if (error instanceof LicenceIntegrityError) {
+    if (error instanceof LicenceNotFoundError) {
       return error.getHttpResponse();
     }
-    metrics.addMetric('updateContactFailed', MetricUnits.Count, 1);
+    metrics.addMetric('deleteEndorsementFailed', MetricUnits.Count, 1);
     logger.error(`Error returned: ${error}`);
     const errorBody = {
       status: 500,

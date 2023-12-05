@@ -5,8 +5,8 @@ frameworkVersion: '3'
 provider:
   name: aws
   stage: ${opt:stage, 'dev'}
-  region: eu-west-1
-  stackName: ${self:service}
+  region: eu-west-2
+  stackName: ${self:service}-${self:provider.stage}
   tracing:
     apiGateway: true
 
@@ -56,12 +56,12 @@ resources:
       Value:
         Ref: QldbApiGW
       Export:
-        Name: QldbApiGatewayDemo-restApiId
+        Name: QldbApiGatewayDemo-restApiId-${self:provider.stage}
 
     apiGatewayAuthorizerId:
       Value: !Ref ApiGatewayAuthorizer
       Export:
-        Name: QldbApiGatewayDemo-ApiGatewayAuthorizerId
+        Name: QldbApiGatewayDemo-ApiGatewayAuthorizerId-${self:provider.stage}
 
     apiGatewayRestApiRootResourceId:
       Value:
@@ -69,4 +69,4 @@ resources:
           - QldbApiGW
           - RootResourceId
       Export:
-        Name: QldbApiGatewayDemo-rootResourceId
+        Name: QldbApiGatewayDemo-rootResourceId-${self:provider.stage}

@@ -5,7 +5,7 @@ const { Logger, injectLambdaContext } = require('@aws-lambda-powertools/logger')
 const { Tracer, captureLambdaHandler } = require('@aws-lambda-powertools/tracer');
 const { Metrics, MetricUnits, logMetrics } = require('@aws-lambda-powertools/metrics');
 const date = require('date-and-time');
-const { updateLicence } = require('./helper/licence');
+const { updateLicenceStatus } = require('./helper/licence');
 const middy = require('@middy/core')
 const cors = require('@middy/http-cors')
 
@@ -18,18 +18,14 @@ const metrics = new Metrics();
 tracer.captureAWS(require('aws-sdk'));
 
 const handler = async (event) => {
-  const { licenceId, points } = JSON.parse(event.body);
+  const { licenceId, status } = JSON.parse(event.body);
   const userId = event.requestContext.authorizer.claims.sub;
-  logger.debug(`In the update licence handler with licenceId ${licenceId} and points ${points}`);
-  let eventInfo;
+  logger.debug(`In the update licence status handler with licenceId ${licenceId} and status ${status}`);
+  const eventInfo = { eventName: 'LicenceStatusUpdated', eventDate: date.format(new Date(), 'YYYY/MM/DD HH:mm:ss') };
+
   try {
-    if (points > 0) {
-      eventInfo = { eventName: 'PenaltyPointsAdded', points: points, eventDate: date.format(new Date(), 'YYYY/MM/DD HH:mm:ss') };
-    } else {
-      eventInfo = { eventName: 'PenaltyPointsRemoved', points: points, eventDate: date.format(new Date(), 'YYYY/MM/DD HH:mm:ss') };
-    }
-    const response = await updateLicence(licenceId, points, userId, eventInfo);
-    metrics.addMetric('updateLicenceSucceeded', MetricUnits.Count, 1);
+    const response = await updateLicenceStatus(licenceId, status, userId, eventInfo);
+    metrics.addMetric('updateLicenceStatusSucceeded', MetricUnits.Count, 1);
     return {
       statusCode: 200,
       body: JSON.stringify(response),
@@ -38,7 +34,7 @@ const handler = async (event) => {
     if (error instanceof LicenceIntegrityError) {
       return error.getHttpResponse();
     }
-    metrics.addMetric('updateLicenceFailed', MetricUnits.Count, 1);
+    metrics.addMetric('updateLicenceStatusFailed', MetricUnits.Count, 1);
     logger.error(`Error returned: ${error}`);
     const errorBody = {
       status: 500,

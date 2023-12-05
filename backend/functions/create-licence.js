@@ -5,8 +5,7 @@ const { Logger, injectLambdaContext } = require('@aws-lambda-powertools/logger')
 const { Tracer, captureLambdaHandler } = require('@aws-lambda-powertools/tracer');
 const { Metrics, MetricUnits, logMetrics } = require('@aws-lambda-powertools/metrics');
 const middy = require('@middy/core');
-const date = require('date-and-time');
-const { createLicence } = require('./helper/licence');
+const { createContactAndLicence } = require('./helper/licence');
 const LicenceIntegrityError = require('./lib/LicenceIntegrityError');
 const cors = require('@middy/http-cors')
 
@@ -18,16 +17,17 @@ const metrics = new Metrics();
 tracer.captureAWS(require('aws-sdk'));
 
 const handler = async (event) => {
+  logger.debug("EVENT\n" + JSON.stringify(event, null, 2));
   const {
-    firstName, lastName, email, street, county, postcode,
+    firstName, lastName, email, street, county, postcode, mobile
   } = JSON.parse(event.body);
   const userId = event.requestContext.authorizer.claims.sub;
-  logger.debug(`In the create licence handler with: first name ${firstName} last name ${lastName} email ${email} street ${street} and county ${county} and postcode ${postcode} and userId ${userId}`);
+
+  logger.debug(`In the create licence handler with: first name ${firstName} last name ${lastName} email ${email} street ${street} county ${county} postcode ${postcode} mobile ${mobile} userId ${userId}`);
 
   try {
-    const eventInfo = { eventName: 'BicycleLicenceCreated', eventDate: date.format(new Date(), 'YYYY/MM/DD HH:mm:ss') };
-    const response = await createLicence(
-      logger, firstName, lastName, email, street, county, postcode, userId, eventInfo
+    const response = await createContactAndLicence(
+      logger, firstName, lastName, email, street, county, postcode, mobile, userId
     );
     metrics.addMetric('createLicenceSucceeded', MetricUnits.Count, 1);
     return {
