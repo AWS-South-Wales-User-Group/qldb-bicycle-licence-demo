@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import API from "@aws-amplify/api";
 import { Form, Button, Col, Row, Card, InputGroup } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import Code from "./prism/Code";
+import Code from "../prism/Code";
 import faker from "faker";
 
 export default function Register(props) {
