@@ -44,5 +44,5 @@ resources:
         ResourceArn:
           !Sub 
             - arn:aws:apigateway:${AWS::Region}::/restapis/${ApiId}/stages/${self:provider.stage}
-            - { ApiId: !ImportValue QldbApiGatewayDemo-restApiId-${self:provider.stage} }
+            - { ApiId: !ImportValue QldbApiGatewayDemo-restApiId-prod }
         WebACLArn: !GetAtt MyWAFACL.Arn

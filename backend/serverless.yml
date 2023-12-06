@@ -21,7 +21,6 @@ provider:
     POWERTOOLS_METRICS_NAMESPACE: qldb-bicycle-licence
     AWS_NODEJS_CONNECTION_REUSE_ENABLED	: "1"
     LEDGER_NAME: ${self:custom.ledgerName}
-#      Ref: qldbLedger
   iam:
     role:
       statements:
@@ -38,7 +37,7 @@ provider:
           Resource: "*" # Restrict resource to minimum required
 
 custom: 
-  ledgerName: demoRedactionLedger
+  ledgerName: qldb-bicycle-licence-${self:provider.stage}
 
 plugins:
   - serverless-iam-roles-per-function
@@ -451,37 +450,36 @@ functions:
       MAPPING_INDEX_1: licenceId
 
 resources:
-#  Resources:
-#    qldbLedger:
- #     Type: AWS::QLDB::Ledger
-  #    Properties:
-   #     Name: qldb-bicycle-licence-${self:provider.stage}
-    #    DeletionProtection: false
-     #   PermissionsMode: STANDARD
-      #  Tags:
-       #   - 
-        #    Key: name
-         #   Value: qldb-bicycle-licence-demo
+  Resources:
+    qldbLedger:
+      Type: AWS::QLDB::Ledger
+      Properties:
+        Name: ${self:custom.ledgerName}
+        DeletionProtection: false
+        PermissionsMode: STANDARD
+        Tags:
+          - 
+            Key: name
+            Value: qldb-bicycle-licence-demo
 
-#    qldbTable:
- #     Type: Custom::qldbTable
-  #    DependsOn: qldbLedger
-   #   Properties:
-    #    ServiceToken: !GetAtt CreateQldbDemoTableLambdaFunction.Arn
-     #   Version: 1.1  #change this to force redeploy
+    qldbTable:
+      Type: Custom::qldbTable
+      DependsOn: qldbLedger
+      Properties:
+        ServiceToken: !GetAtt CreateQldbDemoTableLambdaFunction.Arn
+        Version: 1.1  #change this to force redeploy
 
-#    qldbIndex:
- #     Type: Custom::qldbIndexes
-  #    DependsOn: qldbTable
-   #   Properties:
-    #    ServiceToken: !GetAtt CreateQldbDemoIndexLambdaFunction.Arn
-     #   Version: 1.1  #change this to force redeploy 
+    qldbIndex:
+      Type: Custom::qldbIndexes
+      DependsOn: qldbTable
+      Properties:
+        ServiceToken: !GetAtt CreateQldbDemoIndexLambdaFunction.Arn
+        Version: 1.1  #change this to force redeploy 
   
   Outputs:
 
     qldbBicycleLicenceLedger:
       Value: ${self:custom.ledgerName}
-#        Ref: qldbLedger
       Export:
         Name: qldb-bicycle-licence-${self:provider.stage}
 
