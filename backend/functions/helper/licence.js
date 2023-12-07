@@ -3,9 +3,7 @@
  */
 
 //const Log = require('@dazn/lambda-powertools-logger');
-const { getQldbDriver } = require('./ConnectToLedger');
-const AWSXRay = require('aws-xray-sdk-core');
-AWSXRay.captureAWS(require('aws-sdk'));
+const qldb = require('amazon-qldb-driver-nodejs');
 const LicenceIntegrityError = require('../lib/LicenceIntegrityError');
 const LicenceNotFoundError = require('../lib/LicenceNotFoundError');
 const date = require('date-and-time');
@@ -64,7 +62,7 @@ const createContactAndLicence = async (logger, firstName, lastName, email, stree
 
   let licence;
   // Get a QLDB Driver instance
-  const qldbDriver = await getQldbDriver();
+  const qldbDriver = new qldb.QldbDriver(process.env.LEDGER_NAME);
   await qldbDriver.executeLambda(async (txn) => {
     // Check if the record already exists assuming email unique for contact
     const recordsReturned = await checkEmailUnique(logger, txn, email);
@@ -155,7 +153,7 @@ async function getLicenceRecordHistoryById(txn, id) {
 
   let licence;
   // Get a QLDB Driver instance
-  const qldbDriver = await getQldbDriver();
+  const qldbDriver = new qldb.QldbDriver(process.env.LEDGER_NAME);
   await qldbDriver.executeLambda(async (txn) => {
 
     const query = 'UPDATE Licence SET status = ?, events = ? WHERE licenceId = ? AND userId = ?'
@@ -188,7 +186,7 @@ const updateLicenceAddress = async (licenceId, street, county, postcode, userId,
 
   let licence;
   // Get a QLDB Driver instance
-  const qldbDriver = await getQldbDriver();
+  const qldbDriver = new qldb.QldbDriver(process.env.LEDGER_NAME);
   await qldbDriver.executeLambda(async (txn) => {
     // Get the current record
 
@@ -231,7 +229,7 @@ const updateLicenceAddress = async (licenceId, street, county, postcode, userId,
   let version;
 
   // Get a QLDB Driver instance
-  const qldbDriver = await getQldbDriver();
+  const qldbDriver = new qldb.QldbDriver(process.env.LEDGER_NAME);
   await qldbDriver.executeLambda(async (txn) => {
 
     const getCommittedQuery = 'SELECT * FROM _ql_committed_Contact AS c WHERE c.data.licenceId = ? AND c.data.userId = ?'
@@ -290,7 +288,7 @@ const updateLicenceAddress = async (licenceId, street, county, postcode, userId,
 
   let licence;
   // Get a QLDB Driver instance
-  const qldbDriver = await getQldbDriver();
+  const qldbDriver = new qldb.QldbDriver(process.env.LEDGER_NAME);
   await qldbDriver.executeLambda(async (txn) => {
     // Get the current record
 
@@ -358,7 +356,7 @@ const getLicence = async (licenceId, userId) => {
 
   let licence;
   // Get a QLDB Driver instance
-  const qldbDriver = await getQldbDriver();
+  const qldbDriver = new qldb.QldbDriver(process.env.LEDGER_NAME);
   await qldbDriver.executeLambda(async (txn) => {
     // Get the current record
     const result = await getLicenceRecordById(txn, licenceId, userId);
@@ -384,7 +382,7 @@ const getLicenceSummary = async (userId) => {
 
   let licence;
   // Get a QLDB Driver instance
-  const qldbDriver = await getQldbDriver();
+  const qldbDriver = new qldb.QldbDriver(process.env.LEDGER_NAME);
   await qldbDriver.executeLambda(async (txn) => {
     // Get the current record
     const result = await txn.execute('SELECT licenceId, firstName, lastName, postcode FROM Licence WHERE userId = ?', userId);
@@ -410,7 +408,7 @@ const getLicenceSummary = async (userId) => {
 
   let licence;
   // Get a QLDB Driver instance
-  const qldbDriver = await getQldbDriver();
+  const qldbDriver = new qldb.QldbDriver(process.env.LEDGER_NAME);
   await qldbDriver.executeLambda(async (txn) => {
 
     // Get the contact record
@@ -438,7 +436,7 @@ const getLicenceSummary = async (userId) => {
 
   let licence;
   // Get a QLDB Driver instance
-  const qldbDriver = await getQldbDriver();
+  const qldbDriver = new qldb.QldbDriver(process.env.LEDGER_NAME);
   await qldbDriver.executeLambda(async (txn) => {
     // Get the current record
     const result = await txn.execute('SELECT * FROM Endorsement WHERE licenceId = ?', licenceId);  
@@ -464,7 +462,7 @@ const getLicenceSummary = async (userId) => {
 
   let responseRecord = [];
   // Get a QLDB Driver instance
-  const qldbDriver = await getQldbDriver();
+  const qldbDriver = new qldb.QldbDriver(process.env.LEDGER_NAME);
   await qldbDriver.executeLambda(async (txn) => {
     // Get the current record
     const result = await txn.execute('SELECT endorsementId FROM Mapping WHERE licenceId = ?', licenceId);  
@@ -496,7 +494,7 @@ const getLicenceHistory = async (licenceId) => {
 
   let licence;
   // Get a QLDB Driver instance
-  const qldbDriver = await getQldbDriver();
+  const qldbDriver = new qldb.QldbDriver(process.env.LEDGER_NAME);
   await qldbDriver.executeLambda(async (txn) => {
     // Get the current record
     const result = await getLicenceRecordHistoryById(txn, licenceId);
@@ -521,7 +519,7 @@ const getLicenceHistory = async (licenceId) => {
 
   let licence;
   // Get a QLDB Driver instance
-  const qldbDriver = await getQldbDriver();
+  const qldbDriver = new qldb.QldbDriver(process.env.LEDGER_NAME);
   await qldbDriver.executeLambda(async (txn) => {
 
     // get the contact ID from the licenceId
@@ -552,7 +550,7 @@ const deleteLicence = async (id, userId) => {
 
   let licence;
   // Get a QLDB Driver instance
-  const qldbDriver = await getQldbDriver();
+  const qldbDriver = new qldb.QldbDriver(process.env.LEDGER_NAME);
   await qldbDriver.executeLambda(async (txn) => {
     // Get the current record
     const result = await getLicenceRecordById(txn, id, userId);
@@ -581,7 +579,7 @@ const deleteLicence = async (id, userId) => {
   let sortedResponse;
 
   // Get a QLDB Driver instance
-  const qldbDriver = await getQldbDriver();
+  const qldbDriver = new qldb.QldbDriver(process.env.LEDGER_NAME);
   await qldbDriver.executeLambda(async (txn) => {
 
     // logically delete the current record
@@ -642,7 +640,7 @@ const deleteLicence = async (id, userId) => {
   let sortedResponse;
 
   // Get a QLDB Driver instance
-  const qldbDriver = await getQldbDriver();
+  const qldbDriver = new qldb.QldbDriver(process.env.LEDGER_NAME);
   await qldbDriver.executeLambda(async (txn) => {
 
     // retrieve revision from history function
@@ -672,7 +670,7 @@ const waitUntilRevisionRedacted = async (logger, tableName, licenceId, version) 
   logger.debug(`In waitUntilRevisionRedacted function`);
 
   let isRedacted = false;
-  const qldbDriver = getQldbDriver();
+  const qldbDriver = new qldb.QldbDriver(process.env.LEDGER_NAME);
 
   while (!isRedacted) {
     await qldbDriver.executeLambda(async (txn) => {
@@ -710,7 +708,7 @@ function sleep(ms) {
 
   let licence;
   // Get a QLDB Driver instance
-  const qldbDriver = await getQldbDriver();
+  const qldbDriver = new qldb.QldbDriver(process.env.LEDGER_NAME);
   await qldbDriver.executeLambda(async (txn) => {
     // Get the current record
     const statement = 'DELETE FROM Endorsement WHERE endorsementId = ? AND licenceId = ?';

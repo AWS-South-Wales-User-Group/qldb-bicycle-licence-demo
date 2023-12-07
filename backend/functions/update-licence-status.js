@@ -6,16 +6,17 @@ const { Tracer, captureLambdaHandler } = require('@aws-lambda-powertools/tracer'
 const { Metrics, MetricUnits, logMetrics } = require('@aws-lambda-powertools/metrics');
 const date = require('date-and-time');
 const { updateLicenceStatus } = require('./helper/licence');
-const middy = require('@middy/core')
-const cors = require('@middy/http-cors')
+const { QLDBSessionClient } = require('@aws-sdk/client-qldb-session');
+
+import middy from '@middy/core'
+import cors from '@middy/http-cors'
 
 const LicenceIntegrityError = require('./lib/LicenceIntegrityError');
 
 const logger = new Logger();
 const tracer = new Tracer();
+tracer.captureAWSv3Client(new QLDBSessionClient({}));
 const metrics = new Metrics();
-
-tracer.captureAWS(require('aws-sdk'));
 
 const handler = async (event) => {
   const { licenceId, status } = JSON.parse(event.body);

@@ -8,15 +8,16 @@ const { Metrics, logMetrics, MetricUnits } = require('@aws-lambda-powertools/met
 const date = require('date-and-time');
 const { updateContact } = require('./helper/licence');
 const LicenceIntegrityError = require('./lib/LicenceIntegrityError');
-const middy = require('@middy/core')
-const cors = require('@middy/http-cors')
+const { QLDBSessionClient } = require('@aws-sdk/client-qldb-session');
+
+import middy from '@middy/core'
+import cors from '@middy/http-cors'
 
 //  Params fetched from the env vars
 const logger = new Logger();
 const tracer = new Tracer();
+tracer.captureAWSv3Client(new QLDBSessionClient({}));
 const metrics = new Metrics();
-
-tracer.captureAWS(require('aws-sdk'));
 
 const handler = async (event) => {
   const {

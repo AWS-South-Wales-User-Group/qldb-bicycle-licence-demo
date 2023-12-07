@@ -6,16 +6,18 @@
 const { Logger, injectLambdaContext } = require('@aws-lambda-powertools/logger');
 const { Tracer, captureLambdaHandler } = require('@aws-lambda-powertools/tracer');
 const { Metrics, MetricUnits, logMetrics } = require('@aws-lambda-powertools/metrics');
-const middy = require('@middy/core');
+import middy from '@middy/core'
+//const middy = require('@middy/core');
 const response = require('cfn-response-promise');
 const { QldbDriver } = require('amazon-qldb-driver-nodejs');
+const { QLDBSessionClient } = require('@aws-sdk/client-qldb-session');
+
 const qldbDriver = new QldbDriver(process.env.LEDGER_NAME);
 
 const logger = new Logger();
 const tracer = new Tracer();
+tracer.captureAWSv3Client(new QLDBSessionClient({}));
 const metrics = new Metrics();
-
-tracer.captureAWS(require('aws-sdk'));
 
 async function createTable(txn, tableName) {
   const statement = `CREATE TABLE ${tableName}`;
